@@ -1,0 +1,21 @@
+import mongoose, { Schema, Document } from "mongoose";
+
+// Interfaz del producto
+export interface IProducto extends Document {
+  nombre: string;
+  precio: number;
+  stock: number;
+  costo?: number;
+}
+
+// Esquema del producto
+const productoSchema: Schema = new Schema<IProducto>({
+  nombre: { type: String, required: true },
+  precio: { type: Number, required: true },
+  stock: { type: Number, required: true },
+  costo: { type: Number, required: true },
+});
+
+// Modelo del producto
+const Producto = mongoose.model<IProducto>("Producto", productoSchema);
+export default Producto;
