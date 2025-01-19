@@ -1,12 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-
-// Definimos la interfaz
-export interface IUsuario extends Document {
-  nombre: string;
-  apellido: string;
-  email: string;
-  puntos?: number;
-}
+import mongoose, { Schema } from "mongoose";
+import { IUsuario } from "../interfaces/IUser";
 
 // Creamos el esquema
 const usuarioSchema: Schema = new Schema<IUsuario>({

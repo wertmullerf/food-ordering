@@ -1,19 +1,6 @@
-import mongoose, { Schema, Document } from "mongoose";
-import { IUsuario } from "./Usuario";
+import mongoose, { Schema } from "mongoose";
+import { IPedido } from "../interfaces/IPedido";
 import { PedidoEstatus } from "../enums/PedidoEstatus";
-import { IProducto } from "./Producto";
-// Interfaz del pedido
-export interface IProductoPedido extends Document {
-  producto_id: IProducto["_id"];
-  cantidad: number;
-  precio: number;
-}
-export interface IPedido extends Document {
-  usuario_id: IUsuario["_id"];
-  estatus: PedidoEstatus;
-  importe: number;
-  productos: IProductoPedido[];
-}
 
 // Esquema del pedido
 const pedidoSchema: Schema = new Schema<IPedido>({

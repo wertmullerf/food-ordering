@@ -1,14 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-import { IUsuario } from "./Usuario";
-
-// Interfaz de la dirección
-export interface IDireccion extends Document {
-  usuario_id: IUsuario["_id"];
-  calle: string;
-  altura: number;
-  numero: number;
-  piso?: number;
-}
+import mongoose, { Schema } from "mongoose";
+import { IDireccion } from "../interfaces/IDireccion";
 
 // Esquema de la dirección
 const direccionSchema: Schema = new Schema<IDireccion>({
