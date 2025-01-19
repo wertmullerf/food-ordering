@@ -17,4 +17,6 @@ app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
-//
+app.use("/users", require("./routes/users"));
+app.use("/order", require("./routes/order"));
+app.use("/product", require("./routes/product"));

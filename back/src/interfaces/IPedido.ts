@@ -4,7 +4,7 @@ import { PedidoEstatus } from "../enums/PedidoEstatus";
 import { IProductoPedido } from "./IPedidoProducto";
 
 export interface IPedido extends Document {
-  usuario_id: IUsuario["_id"];
+  usuario_id: IUsuario["_id"]; //Reveer esto
   estatus: PedidoEstatus;
   importe: number;
   productos: IProductoPedido[];
