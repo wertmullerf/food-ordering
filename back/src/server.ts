@@ -6,6 +6,7 @@ import userRouter from "./routes/user.routes";
 import orderRouter from "./routes/order.routes";
 import productRouter from "./routes/product.routes";
 import "dotenv/config";
+import paymentRouter from "./routes/payment.routes";
 const app = express();
 connectDB();
 
@@ -19,6 +20,7 @@ app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
-app.use("/api/users", userRouter);
+app.use("/api/user", userRouter);
 app.use("/api/order", orderRouter);
+app.use("/api/payment", paymentRouter);
 app.use("/api/product", productRouter);
