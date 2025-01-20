@@ -46,7 +46,7 @@ export const eliminarUsuario = async (req: Request, res: Response) => {
     res.status(500).json(error);
   }
 };
-
+/*
 export const agregarUsuario = async (req: Request, res: Response) => {
   try {
     const { nombre, apellido, email } = req.body;
@@ -64,3 +64,4 @@ export const agregarUsuario = async (req: Request, res: Response) => {
     res.status(500).json(error);
   }
 };
+*/

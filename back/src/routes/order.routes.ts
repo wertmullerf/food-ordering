@@ -6,7 +6,7 @@ import {
   obtenerOrdenId,
 } from "../controllers/order.controller";
 
-orderRouter.post("/", obtenerOrdenes);
+orderRouter.get("/", obtenerOrdenes);
 orderRouter.get("/:id", obtenerOrdenId);
 /*orderRouter.get("/editar/:userId/:ordenId", editarOrden);
 orderRouter.get("/eliminar/:userId/:ordenId", eliminarOrden);

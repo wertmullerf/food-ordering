@@ -3,6 +3,8 @@ import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
 import { ACCESS_TOKEN } from "../config";
 import { PayerRequest } from "mercadopago/dist/clients/payment/create/types";
 import { PreferenceResponse } from "mercadopago/dist/clients/preference/commonTypes";
+import { buscarCrearUsuario } from "../services/user.service"; // Importar la función
+import Pedido from "../models/Pedido";
 
 const client = new MercadoPagoConfig({
   accessToken: ACCESS_TOKEN,
@@ -12,52 +14,34 @@ const payment = new Payment(client);
 
 export const crearOrden = async (req: Request, res: Response) => {
   try {
+    const { payerData, items } = req.body;
+
+    if (!payerData || !items) {
+      res.status(400).json({ message: "Faltan datos requeridos" });
+      return;
+    }
+
+    // Usar la función para obtener o crear al usuario
+    await buscarCrearUsuario(payerData);
+
+    // Configuración del comprador (Payer)
     const payer: PayerRequest = {
-      email: "comprador.nuevo@mail.com",
-      first_name: "John",
-      last_name: "Doe",
-      phone: {
-        area_code: "1",
-        number: "1234567",
-      },
-      address: {
-        street_name: "Calle 123",
-        street_number: "123",
-        zip_code: "123456",
-        city: "Buenos Aires",
-      },
-      identification: {
-        type: "DNI",
-        number: "12345678",
-      },
+      email: payerData.email,
+      first_name: payerData.first_name,
+      last_name: payerData.last_name,
+      phone: payerData.phone,
+      address: payerData.address,
+      identification: payerData.identification,
     };
-    const itemsToPay = [
-      {
-        id: "001",
-        title: "Producto #1",
-        description: "Descripción del producto #1 a pagar",
-        picture_url: "https://www.mercadopago.com/org-img/MP3/home/logomp3.gif",
-        category_id: "1",
-        quantity: 1,
-        unit_price: 10000, //2.29 USD
-      },
-      {
-        id: "002",
-        title: "Producto 2",
-        description: "Descripción del producto 2",
-        picture_url: "https://www.mercadopago.com/org-img/MP3/home/logomp3.gif",
-        category_id: "2",
-        quantity: 2,
-        unit_price: 20000, //4,58 USD
-      },
-    ];
 
     let result: PreferenceResponse | undefined;
     const preference = new Preference(client);
+
+    // Crear la preferencia de pago
     await preference
       .create({
         body: {
-          items: itemsToPay,
+          items,
           payer,
           redirect_urls: {
             success: "https://www.example.com/success",
@@ -75,15 +59,28 @@ export const crearOrden = async (req: Request, res: Response) => {
           timeout: 5000,
         },
       })
-      .then((x) => {
-        console.log(x);
-        result = x;
+      .then((response: PreferenceResponse) => {
+        // Acceder al URL de pago
+        const paymentUrl = response?.init_point;
+
+        if (paymentUrl) {
+          // Responder con la URL de pago generada
+          res.json({ url: paymentUrl });
+        } else {
+          res
+            .status(400)
+            .json({ message: "Error al generar la preferencia de pago" });
+        }
       })
       .catch((err) => {
-        console.log(err);
+        console.log("Error al crear la preferencia: ", err);
+        res
+          .status(500)
+          .json({ message: "Error al crear la preferencia de pago" });
       });
   } catch (error) {
     console.log("Error al crear un pago: ", error);
+    res.status(500).json({ message: "Error al crear la orden de pago" });
   }
 };
 
