@@ -1,13 +1,13 @@
 import express from "express";
 const router = express.Router();
 
-const {
+import {
   obtenerProductos,
   obtenerProductoId,
   editarProducto,
   eliminarProducto,
   agregarProducto,
-} = require("../controller/productController");
+} from "../controllers/productController";
 
 router.post("/", obtenerProductos);
 router.get("/:id", obtenerProductoId);

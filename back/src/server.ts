@@ -2,7 +2,6 @@ import express from "express";
 import "dotenv/config";
 import { connectDB } from "./config/db";
 import bodyParser from "body-parser";
-
 const app = express();
 connectDB();
 
@@ -17,6 +16,6 @@ app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
-app.use("/users", require("./routes/users"));
-app.use("/order", require("./routes/order"));
-app.use("/product", require("./routes/product"));
+app.use("/api/users", require("./routes/users"));
+app.use("/api/order", require("./routes/order"));
+app.use("/api/product", require("./routes/product"));
