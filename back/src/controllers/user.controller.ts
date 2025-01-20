@@ -23,13 +23,14 @@ export const obtenerUsuarioId = async (req: Request, res: Response) => {
 export const editarUsuario = async (req: Request, res: Response) => {
   try {
     const updates = req.body;
-    const userId = req.params;
+    const { id } = req.params;
     const usuarioActualizado = await Usuario.findOneAndUpdate(
-      { _id: userId },
+      { _id: id },
       { $set: updates }, // Chequear esto, si actualizo de esta forma debo poner strict en los modelos para no agregar campos nuevos
       { new: true }
     );
     console.log("Usuario actualizado:", usuarioActualizado);
+    res.json({ Usuario: usuarioActualizado });
   } catch (error) {
     console.error("Error al actualizar el usuario:", error);
   }
@@ -48,14 +49,15 @@ export const eliminarUsuario = async (req: Request, res: Response) => {
 
 export const agregarUsuario = async (req: Request, res: Response) => {
   try {
-    const { nombre, apellido, email } = req.params;
+    const { nombre, apellido, email } = req.body;
     const existingUser = await Usuario.findOne({ email });
     if (existingUser) {
-      return res.status(400).json("Usuario ya registrado");
+      res.json("Usuario ya registrado");
+      return;
     }
     const puntos = 0;
     const usuario = new Usuario({ nombre, apellido, email, puntos });
-    usuario.save();
+    await usuario.save();
     res.json({ msg: "usuario agregado" });
   } catch (error) {
     console.error("Error al agregar usuario:", error);

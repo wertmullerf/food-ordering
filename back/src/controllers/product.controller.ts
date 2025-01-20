@@ -27,11 +27,11 @@ export const obtenerProductoId = async (req: Request, res: Response) => {
 
 export const editarProducto = async (req: Request, res: Response) => {
   try {
-    const { productId } = req.params;
+    const { id } = req.params;
     const updates = req.body;
 
     const productoActualizado = await Producto.findByIdAndUpdate(
-      productId,
+      id,
       { $set: updates },
       { new: true } // Devuelve el documento actualizado
     );
@@ -67,7 +67,8 @@ export const agregarProducto = async (req: Request, res: Response) => {
 
     const productoExistente = await Producto.findOne({ nombre }).lean();
     if (productoExistente) {
-      return res.status(400).json({ error: "Producto ya registrado" });
+      res.status(400).json({ error: "Producto ya registrado" });
+      return;
     }
 
     const productoNuevo: IProducto = new Producto({

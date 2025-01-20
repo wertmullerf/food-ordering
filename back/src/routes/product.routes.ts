@@ -7,12 +7,12 @@ import {
   editarProducto,
   eliminarProducto,
   agregarProducto,
-} from "../controllers/productController";
+} from "../controllers/product.controller";
 
-productRouter.post("/", obtenerProductos);
+productRouter.get("/", obtenerProductos);
 productRouter.get("/:id", obtenerProductoId);
-productRouter.get("/editar/:productId", editarProducto);
-productRouter.get("/eliminar/:productId", eliminarProducto);
-//productRouter.post("/", agregarProducto);
+productRouter.patch("/:id", editarProducto);
+productRouter.delete("/:id", eliminarProducto);
+productRouter.post("/", agregarProducto);
 
 export default productRouter;

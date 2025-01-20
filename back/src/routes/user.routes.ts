@@ -7,13 +7,12 @@ import {
   editarUsuario,
   eliminarUsuario,
   agregarUsuario,
-  //funciones de db
-} from "../controllers/userController";
+} from "../controllers/user.controller";
 
-userRouter.post("/", obtenerUsuarios);
+userRouter.get("/", obtenerUsuarios);
 userRouter.get("/:id", obtenerUsuarioId);
-userRouter.get("/editar/:userId", editarUsuario);
-userRouter.get("/eliminar/:userId", eliminarUsuario);
-//userRouter.post("/", agregarUsuario);
+userRouter.patch("/:id", editarUsuario);
+userRouter.delete("/:id", eliminarUsuario);
+userRouter.post("/", agregarUsuario);
 
 export default userRouter;

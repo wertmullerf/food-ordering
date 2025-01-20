@@ -1,8 +1,8 @@
 import { Document } from "mongoose";
 import { IProducto } from "./IProducto";
 
-export interface IProductoPedido extends Document {
+export interface IPedidoProducto extends Document {
   producto_id: IProducto["_id"];
   cantidad: number;
-  precio: number;
+  precio_unitario: number;
 }
