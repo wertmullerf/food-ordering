@@ -1,7 +1,7 @@
 import Usuario from "../models/Usuario";
 import { Request, Response } from "express";
 
-const obtenerUsuarios = async (req: Request, res: Response) => {
+export const obtenerUsuarios = async (req: Request, res: Response) => {
   try {
     const users = await Usuario.find().lean();
     res.json({ usuarios: users });
@@ -10,7 +10,7 @@ const obtenerUsuarios = async (req: Request, res: Response) => {
   }
 };
 
-const obtenerUsuarioId = async (req: Request, res: Response) => {
+export const obtenerUsuarioId = async (req: Request, res: Response) => {
   try {
     const id = req.params.id; // la autoincremental?
     const user = await Usuario.findById(id).lean();
@@ -20,7 +20,7 @@ const obtenerUsuarioId = async (req: Request, res: Response) => {
   }
 };
 
-const editarUsuario = async (req: Request, res: Response) => {
+export const editarUsuario = async (req: Request, res: Response) => {
   try {
     const updates = req.body;
     const userId = req.params;
@@ -35,7 +35,7 @@ const editarUsuario = async (req: Request, res: Response) => {
   }
 };
 
-const eliminarUsuario = async (req: Request, res: Response) => {
+export const eliminarUsuario = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     await Usuario.findByIdAndDelete(id);
@@ -46,7 +46,7 @@ const eliminarUsuario = async (req: Request, res: Response) => {
   }
 };
 
-const agregarUsuario = async (req: Request, res: Response) => {
+export const agregarUsuario = async (req: Request, res: Response) => {
   try {
     const { nombre, apellido, email } = req.params;
     const existingUser = await Usuario.findOne({ email });
@@ -61,12 +61,4 @@ const agregarUsuario = async (req: Request, res: Response) => {
     console.error("Error al agregar usuario:", error);
     res.status(500).json(error);
   }
-};
-
-module.exports = {
-  obtenerUsuarios,
-  obtenerUsuarioId,
-  editarUsuario,
-  eliminarUsuario,
-  agregarUsuario,
 };
