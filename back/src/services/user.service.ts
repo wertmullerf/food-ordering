@@ -15,6 +15,5 @@ export const buscarCrearUsuario = async (payerData: any) => {
     });
     await usuario.save();
   }
-  console.log(usuario);
   return usuario;
 };

@@ -5,6 +5,10 @@ import { PayerRequest } from "mercadopago/dist/clients/payment/create/types";
 import { PreferenceResponse } from "mercadopago/dist/clients/preference/commonTypes";
 import { buscarCrearUsuario } from "../services/user.service"; // Importar la función
 import Pedido from "../models/Pedido";
+import { crearPedido } from "../services/order.service";
+import { IPedidoProducto } from "../interfaces/IPedidoProducto";
+import { IPedido } from "../interfaces/IPedido";
+import { PedidoEstatus } from "../enums/PedidoEstatus";
 
 const client = new MercadoPagoConfig({
   accessToken: ACCESS_TOKEN,
@@ -14,15 +18,26 @@ const payment = new Payment(client);
 
 export const crearOrden = async (req: Request, res: Response) => {
   try {
-    const { payerData, items } = req.body;
+    const { payerData } = req.body;
+    const productos: IPedidoProducto[] = req.body.items;
 
-    if (!payerData || !items) {
+    if (!payerData || !productos) {
       res.status(400).json({ message: "Faltan datos requeridos" });
       return;
     }
 
-    // Usar la función para obtener o crear al usuario
-    await buscarCrearUsuario(payerData);
+    const items = productos.map((producto) => ({
+      id: "",
+      title: producto.nombre as string,
+      quantity: producto.cantidad,
+      unit_price: producto.precio_unitario,
+    }));
+    // Buscar o crear el usuario
+    const usuario = await buscarCrearUsuario(payerData);
+
+    console.log(usuario);
+    // Crear el pedido
+    let nuevoPedido: IPedido = await crearPedido(productos, usuario); // Llamamos al servicio de crearPedido
 
     // Configuración del comprador (Payer)
     const payer: PayerRequest = {
@@ -34,7 +49,6 @@ export const crearOrden = async (req: Request, res: Response) => {
       identification: payerData.identification,
     };
 
-    let result: PreferenceResponse | undefined;
     const preference = new Preference(client);
 
     // Crear la preferencia de pago
@@ -42,16 +56,15 @@ export const crearOrden = async (req: Request, res: Response) => {
       .create({
         body: {
           items,
-          payer,
-          redirect_urls: {
+          /*redirect_urls: {
             success: "https://www.example.com/success",
             failure: "https://www.example.com/failure",
             pending: "https://www.example.com/pending",
-          },
+          },*/
           back_urls: {
-            success: "http://localhost:5050/api/payment/success",
-            failure: "http://localhost:5050/api/payment/failure",
-            pending: "http://localhost:5050/api/payment/pending",
+            success: `http://localhost:5050/api/payment/success?id=${nuevoPedido._id}`,
+            failure: `http://localhost:5050/api/payment/failure?id=${nuevoPedido._id}`,
+            pending: `http://localhost:5050/api/payment/pending?id=${nuevoPedido._id}`,
           },
           auto_return: "approved",
         },
@@ -87,7 +100,16 @@ export const crearOrden = async (req: Request, res: Response) => {
 export const exitoso = async (req: Request, res: Response) => {
   try {
     const data = req.query as unknown as PaymentResponse;
+    const { id } = req.query;
+    console.log(id);
     console.log("Data del pago recibido:", data);
+
+    const pedidoActualizado = await Pedido.findOneAndUpdate(
+      { _id: id },
+      { $set: { estatus: PedidoEstatus.Confirmado } }, // Chequear esto, si actualizo de esta forma debo poner strict en los modelos para no agregar campos nuevos
+      { new: true }
+    );
+
     //*Procesar el estado del pago en la base de datos
     res.status(200).json({
       message: "Pago realizado de forma exitosa",
@@ -100,7 +122,7 @@ export const exitoso = async (req: Request, res: Response) => {
 export const fallido = async (req: Request, res: Response) => {
   try {
     const data = req.query as unknown as PaymentResponse;
-    console.log("Data del pago recibido:", data);
+    console.log("Data de  l pago recibido:", data);
   } catch (error) {
     console.log("Error en el pago: ", error);
   }
