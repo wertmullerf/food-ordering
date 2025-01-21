@@ -101,10 +101,8 @@ export const exitoso = async (req: Request, res: Response) => {
   try {
     const data = req.query as unknown as PaymentResponse;
     const { id } = req.query;
-    console.log(id);
-    console.log("Data del pago recibido:", data);
 
-    const pedidoActualizado = await Pedido.findOneAndUpdate(
+    await Pedido.findOneAndUpdate(
       { _id: id },
       { $set: { estatus: PedidoEstatus.Confirmado } }, // Chequear esto, si actualizo de esta forma debo poner strict en los modelos para no agregar campos nuevos
       { new: true }
@@ -122,7 +120,9 @@ export const exitoso = async (req: Request, res: Response) => {
 export const fallido = async (req: Request, res: Response) => {
   try {
     const data = req.query as unknown as PaymentResponse;
-    console.log("Data de  l pago recibido:", data);
+    const { id } = req.query;
+    await Pedido.findByIdAndDelete(id);
+    res.json({ error: "Pedido cancelado por error en el proceso de compra" });
   } catch (error) {
     console.log("Error en el pago: ", error);
   }
