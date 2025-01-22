@@ -1,10 +1,6 @@
 import express from "express";
-import {
-  crearOrden,
-  exitoso,
-  fallido,
-  pendiente,
-} from "../controllers/payment.controller";
+import { crearOrden } from "../controllers/payment.controller";
+import { exitoso, fallido, pendiente } from "../helpers/paymentfunctions";
 const paymentRouter = express.Router();
 
 paymentRouter.post("/create", crearOrden);

@@ -1,4 +1,5 @@
 // src/services/user.service.ts
+import { IUsuario } from "../interfaces/IUser";
 import Usuario from "../models/Usuario";
 
 export const buscarCrearUsuario = async (payerData: any) => {
@@ -16,4 +17,11 @@ export const buscarCrearUsuario = async (payerData: any) => {
     await usuario.save();
   }
   return usuario;
+};
+
+export const verificarUsuario = async (id: IUsuario["_id"]) => {
+  const usuario: IUsuario | null = await Usuario.findById(id);
+  if (usuario?.puntos == 0) {
+    await Usuario.findByIdAndDelete(id);
+  }
 };
