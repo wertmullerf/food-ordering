@@ -4,12 +4,13 @@ const orderRouter = express.Router();
 import {
   obtenerOrdenes,
   obtenerOrdenId,
+  editarOrden,
+  eliminarOrden,
 } from "../controllers/order.controller";
 
 orderRouter.get("/", obtenerOrdenes);
 orderRouter.get("/:id", obtenerOrdenId);
-/*orderRouter.get("/editar/:userId/:ordenId", editarOrden);
-orderRouter.get("/eliminar/:userId/:ordenId", eliminarOrden);
-orderRouter.post("/", agregarOrden);*/
+orderRouter.patch("/id", editarOrden);
+orderRouter.delete("/id", eliminarOrden);
 
 export default orderRouter;

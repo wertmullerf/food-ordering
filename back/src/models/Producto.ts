@@ -4,7 +4,7 @@ import { IProducto } from "../interfaces/IProducto";
 // Esquema del producto
 const productoSchema: Schema = new Schema<IProducto>(
   {
-    nombre: { type: String, required: true },
+    nombre: { type: String, required: true, unique: true },
     precio: { type: Number, required: true },
     stock: { type: Number, required: true },
     costo: { type: Number, required: true },

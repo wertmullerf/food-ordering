@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import Pedido from "../models/Pedido";
 import { PedidoEstatus } from "../enums/PedidoEstatus";
 import { IPedidoProducto } from "../interfaces/IPedidoProducto";
-import Usuario from "../models/Usuario";
 import { verificarUsuario } from "../services/user.service";
 
 export const exitoso = async (req: Request, res: Response) => {
@@ -61,7 +60,7 @@ export const crearPayer = (payerData: any) => {
 
 export const crearListaItems = (productos: IPedidoProducto[]) => {
   return productos.map((producto) => ({
-    id: "",
+    id: producto._id as string,
     title: producto.nombre as string,
     quantity: producto.cantidad,
     unit_price: producto.precio_unitario,
