@@ -23,6 +23,7 @@ const pedidoSchema: Schema = new Schema<IPedido>(
     total: { type: Number, required: true },
   },
   {
+    timestamps: true,
     strict: true,
   }
 );

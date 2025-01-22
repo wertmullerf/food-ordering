@@ -8,4 +8,6 @@ export interface IPedido extends Document {
   estatus: PedidoEstatus;
   total: number;
   productos: IPedidoProducto[];
+  createdAt?: Date; // Opcional si Mongoose lo crea automáticamente
+  updatedAt?: Date;
 }

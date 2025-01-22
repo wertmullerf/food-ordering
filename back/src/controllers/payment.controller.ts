@@ -50,7 +50,13 @@ export const crearOrden = async (req: Request, res: Response) => {
             pending: `http://localhost:5050/api/payment/pending?id=${nuevoPedido._id}`,
           },
           auto_return: "approved",
+          expires: true, // Habilitar expiración
+          expiration_date_from: new Date().toISOString(), // Desde ahora
+          expiration_date_to: new Date(
+            Date.now() + 20 * 60 * 1000
+          ).toISOString(), // 20 minutos después
         },
+
         requestOptions: {
           timeout: 5000,
         },

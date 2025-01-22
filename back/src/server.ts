@@ -10,7 +10,7 @@ import http from "http";
 import { initializeSockets } from "./sockets/index";
 import { Server } from "socket.io";
 import paymentRouter from "./routes/payment.routes";
-
+import "../src/services/cron/limpiarPedidosPendientes";
 const app = express();
 connectDB();
 
