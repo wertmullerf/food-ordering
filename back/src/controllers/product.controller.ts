@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Producto from "../models/Producto"; // Asegúrate de que la ruta es correcta
 import { IProducto } from "../interfaces/IProducto";
+import { obtenerRecursoPorId } from "../helpers/dbfunctions";
 
 export const obtenerProductos = async (req: Request, res: Response) => {
   try {
@@ -12,17 +13,7 @@ export const obtenerProductos = async (req: Request, res: Response) => {
 };
 
 export const obtenerProductoId = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const product = await Producto.findById(id);
-    if (product) {
-      res.json({ producto: product });
-    } else {
-      res.status(404).json({ error: "No existe el producto" });
-    }
-  } catch (error) {
-    res.status(500).json({ message: "Error al obtener producto" });
-  }
+  await obtenerRecursoPorId(Producto, req.params.id, res);
 };
 
 export const editarProducto = async (req: Request, res: Response) => {

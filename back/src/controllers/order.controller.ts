@@ -1,6 +1,7 @@
 import Pedido from "../models/Pedido";
 import { Request, Response } from "express";
 import { IPedido } from "../interfaces/IPedido";
+import { obtenerRecursoPorId } from "../helpers/dbfunctions";
 
 export const obtenerOrdenes = async (req: Request, res: Response) => {
   try {
@@ -12,13 +13,7 @@ export const obtenerOrdenes = async (req: Request, res: Response) => {
 };
 
 export const obtenerOrdenId = async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id;
-    const order = await Pedido.findById(id).lean();
-    res.json({ orden: order });
-  } catch (error) {
-    console.log(error);
-  }
+  await obtenerRecursoPorId(Pedido, req.params.id, res);
 };
 
 export const editarOrden = async (req: Request, res: Response) => {

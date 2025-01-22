@@ -1,5 +1,6 @@
 import Usuario from "../models/Usuario";
 import { Request, Response } from "express";
+import { obtenerRecursoPorId } from "../helpers/dbfunctions";
 
 export const obtenerUsuarios = async (req: Request, res: Response) => {
   try {
@@ -11,13 +12,7 @@ export const obtenerUsuarios = async (req: Request, res: Response) => {
 };
 
 export const obtenerUsuarioId = async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id; // la autoincremental?
-    const user = await Usuario.findById(id).lean();
-    res.json({ Usuario: user });
-  } catch (error) {
-    console.log(error);
-  }
+  await obtenerRecursoPorId(Usuario, req.params.id, res);
 };
 
 export const editarUsuario = async (req: Request, res: Response) => {
