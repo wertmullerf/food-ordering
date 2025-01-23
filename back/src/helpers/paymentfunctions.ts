@@ -1,8 +1,11 @@
+import { MercadoPagoEstatus } from "./../enums/MercadoPagoEstatus";
+import { ACCESS_TOKEN } from "./../config";
 import { Request, Response } from "express";
 import Pedido from "../models/Pedido";
 import { PedidoEstatus } from "../enums/PedidoEstatus";
 import { IPedidoProducto } from "../interfaces/IPedidoProducto";
 import { verificarUsuario } from "../services/user.service";
+import { IMercadoPagoResponse } from "../interfaces/IMercadoPagoResponse";
 
 export const exitoso = async (req: Request, res: Response) => {
   try {
@@ -44,6 +47,56 @@ export const pendiente = async (req: Request, res: Response) => {
     console.log("Data del pago recibido:", data);
   } catch (error) {
     console.log("Error en el pago: ", error);
+  }
+};
+
+export const evaluarEstatus = (data: IMercadoPagoResponse) => {
+  const estatus: MercadoPagoEstatus = data.status;
+  switch (estatus) {
+    case MercadoPagoEstatus.APPROVED:
+    case MercadoPagoEstatus.AUTHORIZED:
+      // Ejecuta la función para estados "aprobados/autorizados"
+      //exitoso();
+      break;
+
+    case MercadoPagoEstatus.REJECTED:
+    case MercadoPagoEstatus.CANCELLED:
+    case MercadoPagoEstatus.REFUNDED:
+      // Ejecuta la función para estados "rechazados/cancelados/reembolsados"
+      //fallido();
+      break;
+
+    default:
+      // Opcional: Manejo de otros estados si es necesario
+      console.log(`Estado no manejado: ${estatus}`);
+      break;
+  }
+};
+
+export const webhook = async (req: Request, res: Response) => {
+  const payment = req.query;
+  console.log({ payment });
+  const paymentID = payment["data.id"];
+  console.log("PAYMENT ID", paymentID);
+  try {
+    const response = await fetch(
+      `https://api.mercadopago.com/v1/payments/${paymentID}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+        },
+      }
+    );
+    if (response.ok) {
+      const data: IMercadoPagoResponse = await response.json();
+      console.log(data);
+      //evaluarEstatus(data);
+    }
+    res.sendStatus(200);
+  } catch (error) {
+    console.log("ERROR", error);
+    res.sendStatus(500);
   }
 };
 

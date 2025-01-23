@@ -21,6 +21,7 @@ const pedidoSchema: Schema = new Schema<IPedido>(
       },
     ],
     total: { type: Number, required: true },
+    pago_id: { type: String },
   },
   {
     timestamps: true,
