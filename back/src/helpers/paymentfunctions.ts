@@ -7,22 +7,17 @@ import { IPedidoProducto } from "../interfaces/IPedidoProducto";
 import { verificarUsuario } from "../services/user.service";
 import { IMercadoPagoResponse } from "../interfaces/IMercadoPagoResponse";
 
-export const exitoso = async (req: Request, res: Response) => {
+export const exitoso = async (id: number) => {
   try {
-    const data = req.query as unknown as PaymentResponse;
-    const { id } = req.query;
-
-    await Pedido.findOneAndUpdate(
-      { _id: id },
-      { $set: { estatus: PedidoEstatus.Confirmado } }, // Chequear esto, si actualizo de esta forma debo poner strict en los modelos para no agregar campos nuevos
-      { new: true }
+    const resultado = await Pedido.updateOne(
+      { pago_id: id },
+      { $set: { estatus: PedidoEstatus.Confirmado } }
     );
+    console.log("Resultado de la actualización:", resultado);
 
-    //*Procesar el estado del pago en la base de datos
-    res.status(200).json({
-      message: "Pago realizado de forma exitosa",
-      data,
-    });
+    // Luego busca el pedido actualizado para asegurarte de que los cambios se aplicaron
+    const pedidoActualizado = await Pedido.findOne({ pago_id: id });
+    console.log("Pedido después de actualizar:", pedidoActualizado);
   } catch (error) {
     console.log("Error en el pago: ", error);
   }
@@ -52,11 +47,12 @@ export const pendiente = async (req: Request, res: Response) => {
 
 export const evaluarEstatus = (data: IMercadoPagoResponse) => {
   const estatus: MercadoPagoEstatus = data.status;
+  console.log(estatus);
   switch (estatus) {
     case MercadoPagoEstatus.APPROVED:
     case MercadoPagoEstatus.AUTHORIZED:
       // Ejecuta la función para estados "aprobados/autorizados"
-      //exitoso();
+      exitoso(data.collector_id); //paso pago_id
       break;
 
     case MercadoPagoEstatus.REJECTED:
@@ -75,9 +71,9 @@ export const evaluarEstatus = (data: IMercadoPagoResponse) => {
 
 export const webhook = async (req: Request, res: Response) => {
   const payment = req.query;
-  console.log({ payment });
+
   const paymentID = payment["data.id"];
-  console.log("PAYMENT ID", paymentID);
+
   try {
     const response = await fetch(
       `https://api.mercadopago.com/v1/payments/${paymentID}`,
@@ -90,8 +86,7 @@ export const webhook = async (req: Request, res: Response) => {
     );
     if (response.ok) {
       const data: IMercadoPagoResponse = await response.json();
-      console.log(data);
-      //evaluarEstatus(data);
+      evaluarEstatus(data);
     }
     res.sendStatus(200);
   } catch (error) {
