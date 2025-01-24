@@ -51,7 +51,7 @@ export const crearOrden = async (req: Request, res: Response) => {
             Date.now() + 20 * 60 * 1000
           ).toISOString(), // 20 minutos después
           notification_url:
-            "https://8755-152-169-122-128.ngrok-free.app/api/payment/webhook",
+            "https://b64d-152-169-122-128.ngrok-free.app/api/payment/webhook", //url del ngrok + /api/payment/webhook
           external_reference: pago_id,
         },
 

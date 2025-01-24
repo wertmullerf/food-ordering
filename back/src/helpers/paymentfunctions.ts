@@ -1,5 +1,4 @@
 import { MercadoPagoEstatus } from "./../enums/MercadoPagoEstatus";
-import { ACCESS_TOKEN } from "./../config";
 import { Request, Response } from "express";
 import Pedido from "../models/Pedido";
 import { PedidoEstatus } from "../enums/PedidoEstatus";
@@ -7,6 +6,7 @@ import { IPedidoProducto } from "../interfaces/IPedidoProducto";
 import { verificarUsuario } from "../services/user.service";
 import { IMercadoPagoResponse } from "../interfaces/IMercadoPagoResponse";
 import { v4 as uuidv4 } from "uuid";
+import { EmailService, enviarCorreoExitoso } from "../services/email/index";
 /*---------------NO TOCAR (TIENE HORAS ENCIMA) -------------------*/
 
 export const exitoso = async (id: String) => {
@@ -49,6 +49,17 @@ export const evaluarEstatus = async (data: IMercadoPagoResponse) => {
     case MercadoPagoEstatus.AUTHORIZED:
       // Ejecuta la función para estados "aprobados/autorizados"
       exitoso(data.external_reference!);
+      const htmlBody = enviarCorreoExitoso(
+        data.payer.first_name,
+        data.external_reference!
+      );
+
+      const emailService = new EmailService();
+      emailService.sendEmail({
+        to: "fwertmuller@gmail.com",
+        subject: `Gracias Por Tu Compra`,
+        htmlBody: htmlBody,
+      });
       break;
 
     case MercadoPagoEstatus.REJECTED:
