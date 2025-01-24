@@ -6,7 +6,11 @@ import { PreferenceResponse } from "mercadopago/dist/clients/preference/commonTy
 import { buscarCrearUsuario } from "../services/user.service";
 import { crearPedido } from "../services/order.service";
 import { IPedidoProducto } from "../interfaces/IPedidoProducto";
-import { crearPayer, crearListaItems } from "../helpers/paymentfunctions";
+import {
+  crearPayer,
+  crearListaItems,
+  generarExternalReference,
+} from "../helpers/paymentfunctions";
 
 const client = new MercadoPagoConfig({
   accessToken: ACCESS_TOKEN,
@@ -32,6 +36,7 @@ export const crearOrden = async (req: Request, res: Response) => {
     const preference = new Preference(client);
 
     try {
+      const pago_id = generarExternalReference();
       // Crear la preferencia de pago
       const response: PreferenceResponse = await preference.create({
         body: {
@@ -46,23 +51,24 @@ export const crearOrden = async (req: Request, res: Response) => {
             Date.now() + 20 * 60 * 1000
           ).toISOString(), // 20 minutos después
           notification_url:
-            "https://ce08-152-169-122-128.ngrok-free.app/api/payment/webhook",
+            "https://8755-152-169-122-128.ngrok-free.app/api/payment/webhook",
+          external_reference: pago_id,
         },
+
         requestOptions: {
           timeout: 5000,
         },
       });
 
       const paymentUrl = response?.init_point;
-      const paymentID = response?.collector_id;
 
       //console.log(response);
-      if (paymentUrl && paymentID) {
+      if (paymentUrl) {
         // Buscar o crear el usuario
         const usuario = await buscarCrearUsuario(payerData);
 
         // Crear el pedido con el paymentID y el usuario
-        await crearPedido(productos, usuario, paymentID);
+        await crearPedido(productos, usuario, pago_id);
 
         // Responder con la URL de pago generada
         res.json({ url: paymentUrl });

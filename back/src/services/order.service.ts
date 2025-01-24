@@ -7,7 +7,7 @@ import Pedido from "../models/Pedido";
 export const crearPedido = async (
   productos: IPedidoProducto[],
   usuario: IUsuario,
-  pago_id?: Number
+  pago_id?: String
 ) => {
   const total = productos.reduce(
     (acc: number, producto: IPedidoProducto) =>

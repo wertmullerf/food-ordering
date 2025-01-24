@@ -6,31 +6,28 @@ import { PedidoEstatus } from "../enums/PedidoEstatus";
 import { IPedidoProducto } from "../interfaces/IPedidoProducto";
 import { verificarUsuario } from "../services/user.service";
 import { IMercadoPagoResponse } from "../interfaces/IMercadoPagoResponse";
+import { v4 as uuidv4 } from "uuid";
+/*---------------NO TOCAR (TIENE HORAS ENCIMA) -------------------*/
 
-export const exitoso = async (id: number) => {
+export const exitoso = async (id: String) => {
   try {
-    const resultado = await Pedido.updateOne(
+    await Pedido.findOneAndUpdate(
       { pago_id: id },
-      { $set: { estatus: PedidoEstatus.Confirmado } }
+      { $set: { estatus: PedidoEstatus.Confirmado } },
+      { new: true } // Devuelve el documento actualizado
     );
-    console.log("Resultado de la actualización:", resultado);
-
-    // Luego busca el pedido actualizado para asegurarte de que los cambios se aplicaron
-    const pedidoActualizado = await Pedido.findOne({ pago_id: id });
-    console.log("Pedido después de actualizar:", pedidoActualizado);
   } catch (error) {
     console.log("Error en el pago: ", error);
   }
 };
+/*---------------NO TOCAR (TIENE HORAS ENCIMA) -------------------*/
 
-export const fallido = async (req: Request, res: Response) => {
+export const fallido = async (id: String) => {
   try {
-    const data = req.query as unknown as PaymentResponse;
-    const { id } = req.query;
-    const pedido = await Pedido.findById(id);
-    await Pedido.findByIdAndDelete(id);
-    await verificarUsuario(pedido?.usuario_id);
-    res.json({ error: "Pedido cancelado por error en el proceso de compra" });
+    const pedido = await Pedido.findOne({ pago_id: id });
+    let usuario_id = pedido?.usuario_id;
+    await Pedido.findOneAndDelete({ pago_id: id });
+    await verificarUsuario(usuario_id);
   } catch (error) {
     console.log("Error en el pago: ", error);
   }
@@ -45,21 +42,20 @@ export const pendiente = async (req: Request, res: Response) => {
   }
 };
 
-export const evaluarEstatus = (data: IMercadoPagoResponse) => {
+export const evaluarEstatus = async (data: IMercadoPagoResponse) => {
   const estatus: MercadoPagoEstatus = data.status;
-  console.log(estatus);
   switch (estatus) {
     case MercadoPagoEstatus.APPROVED:
     case MercadoPagoEstatus.AUTHORIZED:
       // Ejecuta la función para estados "aprobados/autorizados"
-      exitoso(data.collector_id); //paso pago_id
+      exitoso(data.external_reference!);
       break;
 
     case MercadoPagoEstatus.REJECTED:
     case MercadoPagoEstatus.CANCELLED:
     case MercadoPagoEstatus.REFUNDED:
       // Ejecuta la función para estados "rechazados/cancelados/reembolsados"
-      //fallido();
+      fallido(data.external_reference!);
       break;
 
     default:
@@ -71,9 +67,7 @@ export const evaluarEstatus = (data: IMercadoPagoResponse) => {
 
 export const webhook = async (req: Request, res: Response) => {
   const payment = req.query;
-
   const paymentID = payment["data.id"];
-
   try {
     const response = await fetch(
       `https://api.mercadopago.com/v1/payments/${paymentID}`,
@@ -86,6 +80,7 @@ export const webhook = async (req: Request, res: Response) => {
     );
     if (response.ok) {
       const data: IMercadoPagoResponse = await response.json();
+      console.log("EXTERNAL REFERENCE \n", data.external_reference);
       evaluarEstatus(data);
     }
     res.sendStatus(200);
@@ -113,4 +108,8 @@ export const crearListaItems = (productos: IPedidoProducto[]) => {
     quantity: producto.cantidad,
     unit_price: producto.precio_unitario,
   }));
+};
+
+export const generarExternalReference = () => {
+  return uuidv4();
 };

@@ -10,7 +10,7 @@ const pedidoSchema: Schema = new Schema<IPedido>(
       type: String,
       enum: Object.values(PedidoEstatus),
       required: true,
-      lowercase: true,
+      //lowercase: true,
     },
     productos: [
       {
@@ -21,7 +21,7 @@ const pedidoSchema: Schema = new Schema<IPedido>(
       },
     ],
     total: { type: Number, required: true },
-    pago_id: { type: Number }, //El es collector.id
+    pago_id: { type: String }, //El es collector.id
   },
   {
     timestamps: true,
