@@ -2,18 +2,25 @@ import { Request, Response } from "express";
 import Producto from "../models/Producto"; // Asegúrate de que la ruta es correcta
 import { IProducto } from "../interfaces/IProducto";
 import { obtenerRecursoPorId } from "../helpers/dbfunctions";
+import { obtenerInfoRedis, saveResult } from "../helpers/redisfunctions";
 
 export const obtenerProductos = async (req: Request, res: Response) => {
   try {
+    const reply = await obtenerInfoRedis(res, "product");
+    if (reply) {
+      res.json(reply);
+      return;
+    }
     const productos = await Producto.find().lean();
-    res.json({ productos });
+    await saveResult(productos, "product");
+    res.json({ productos: productos });
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener productos" });
+    console.log(error);
   }
 };
 
 export const obtenerProductoId = async (req: Request, res: Response) => {
-  await obtenerRecursoPorId(Producto, req.params.id, res);
+  await obtenerRecursoPorId(Producto, req.params.id, res, "product");
 };
 
 export const editarProducto = async (req: Request, res: Response) => {

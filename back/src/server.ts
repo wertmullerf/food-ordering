@@ -1,5 +1,4 @@
 import express from "express";
-
 import { connectDB } from "./config/db";
 import bodyParser from "body-parser";
 import userRouter from "./routes/user.routes";
@@ -11,8 +10,16 @@ import { initializeSockets } from "./sockets/index";
 import { Server } from "socket.io";
 import paymentRouter from "./routes/payment.routes";
 import "../src/services/cron/limpiarPedidosPendientes";
+import { createClient } from "redis";
+//import responseTime from "response-time";
+
 const app = express();
 connectDB();
+
+// Connecting to redis
+export const client = createClient({
+  url: "redis://127.0.0.1:6379",
+});
 
 const server = http.createServer(app);
 const io = new Server(server);
@@ -25,11 +32,16 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.get("/", (req, res) => {
   res.send("¡Servidor corriendo con TypeScript!");
 });
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
 
 app.use("/api/user", userRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/product", productRouter);
+
+const main = async () => {
+  await client.connect();
+  app.listen(PORT);
+  console.log(`Server listen on port ${PORT}`);
+};
+
+main();
