@@ -1,11 +1,12 @@
+import { BASE_NGROK_URL } from "../../config";
 import { IPedidoProducto } from "../../interfaces/IPedidoProducto";
 
 const generarHtmlExitoso = (
-    nombre: String | null,
-    codigo_de_seguimiento: String,
-    productos: IPedidoProducto[]
+  nombre: String | null,
+  codigo_de_seguimiento: String,
+  productos: IPedidoProducto[]
 ) => {
-    return `     <!DOCTYPE html>
+  return `     <!DOCTYPE html>
           <html lang="es">
           <head>
               <meta charset="UTF-8">
@@ -77,7 +78,7 @@ const generarHtmlExitoso = (
 
                       <p><strong>${codigo_de_seguimiento}</strong></p>
                       <p>Puedes hacer clic en el siguiente botón para ver más detalles sobre el estado de tu envío:</p>
-                      <a href=https://01c5-152-169-122-128.ngrok-free.app/api/order/${codigo_de_seguimiento}" class="button">Ver mi pedido</a>
+                      <a href=${BASE_NGROK_URL}/api/order/${codigo_de_seguimiento}" class="button">Ver mi pedido</a>
                          <!-- Tabla de productos -->
             <h3>Detalle de tu pedido:</h3>
             <table>
@@ -91,19 +92,19 @@ const generarHtmlExitoso = (
                 </thead>
                 <tbody>
                     ${productos
-                        .map(
-                            (producto) => `
+                      .map(
+                        (producto) => `
                     <tr>
                         <td>${producto.nombre}</td>
                         <td>${producto.cantidad}</td>
                         <td>$${producto.precio_unitario.toFixed(2)}</td>
                         <td>$${(
-                            producto.cantidad * producto.precio_unitario
+                          producto.cantidad * producto.precio_unitario
                         ).toFixed(2)}</td>
                     </tr>
                     `
-                        )
-                        .join("")}
+                      )
+                      .join("")}
                 </tbody>
             </table>
                   </div>
@@ -114,10 +115,10 @@ const generarHtmlExitoso = (
 };
 
 export const enviarCorreoExitoso = (
-    nombre: String | null,
-    codigo_de_seguimiento: String,
-    productos: IPedidoProducto[]
+  nombre: String | null,
+  codigo_de_seguimiento: String,
+  productos: IPedidoProducto[]
 ) => {
-    return generarHtmlExitoso(nombre, codigo_de_seguimiento, productos);
-    // Código para enviar el correo con la plantilla generada
+  return generarHtmlExitoso(nombre, codigo_de_seguimiento, productos);
+  // Código para enviar el correo con la plantilla generada
 };

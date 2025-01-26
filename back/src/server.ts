@@ -1,11 +1,12 @@
 import express from "express";
+import "dotenv/config";
 
 import { connectDB } from "./config/db";
+
 import bodyParser from "body-parser";
 import userRouter from "./routes/user.routes";
 import orderRouter from "./routes/order.routes";
 import productRouter from "./routes/product.routes";
-import "dotenv/config";
 import http from "http";
 import { initializeSockets } from "./sockets/index";
 import { Server } from "socket.io";
