@@ -8,6 +8,7 @@ const productoSchema: Schema = new Schema<IProducto>(
     precio: { type: Number, required: true },
     stock: { type: Number, required: true },
     costo: { type: Number, required: true },
+    imageUrl: { type: String, required: true },
   },
   {
     strict: true,

@@ -3,6 +3,7 @@ import Producto from "../models/Producto"; // Asegúrate de que la ruta es corre
 import { IProducto } from "../interfaces/IProducto";
 import { obtenerRecursoPorId } from "../helpers/dbfunctions";
 import { obtenerInfoRedis, saveResult } from "../helpers/redisfunction";
+import upload from "../config/multerConfig"; // Importa la configuración de Multer
 
 export const obtenerProductos = async (req: Request, res: Response) => {
   try {
@@ -59,26 +60,48 @@ export const eliminarProducto = async (req: Request, res: Response) => {
   }
 };
 
-export const agregarProducto = async (req: Request, res: Response) => {
+export const agregarProducto = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
+    // Verifica si se subió una imagen
+    if (!req.file) {
+      res.status(400).json({ message: "No se subió ninguna imagen" });
+      return;
+    }
+
+    // Extrae los datos del cuerpo de la solicitud
     const { nombre, precio, stock, costo } = req.body;
 
+    // Verifica si el producto ya existe
     const productoExistente = await Producto.findOne({ nombre }).lean();
     if (productoExistente) {
       res.status(400).json({ error: "Producto ya registrado" });
       return;
     }
 
+    // Crea un nuevo producto con la URL de la imagen
     const productoNuevo: IProducto = new Producto({
       nombre,
-      precio,
-      stock,
-      costo,
+      precio: parseFloat(precio), // Convierte a número
+      stock: parseInt(stock, 10), // Convierte a número entero
+      costo: parseFloat(costo), // Convierte a número
+      imageUrl: `/uploads/${req.file.filename}`, // Guarda la ruta de la imagen
     });
+
+    // Guarda el producto en la base de datos
     await productoNuevo.save();
 
-    res.status(201).json({ producto: productoNuevo });
+    // Devuelve una respuesta exitosa
+    res.status(201).json({
+      message: "Producto creado con éxito",
+      producto: productoNuevo,
+    });
   } catch (error) {
+    console.error(error);
+
+    // Otros errores del servidor
     res.status(500).json({ message: "Error al agregar producto" });
   }
 };

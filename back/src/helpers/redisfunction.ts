@@ -8,6 +8,6 @@ export const obtenerInfoRedis = async (res: Response, name: string) => {
 
 export const saveResult = async (data: any, name: string) => {
   await client.set(name, JSON.stringify(data), {
-    EX: 15,
+    EX: 900,
   });
 };

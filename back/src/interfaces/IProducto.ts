@@ -5,4 +5,5 @@ export interface IProducto extends Document {
   precio: number;
   stock: number;
   costo?: number;
+  imageUrl: string;
 }

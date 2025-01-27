@@ -1,7 +1,7 @@
 import express from "express";
 import "dotenv/config";
 import morgan from "morgan";
-
+import cors from "cors";
 import { connectDB } from "./config/db";
 
 import bodyParser from "body-parser";
@@ -17,6 +17,7 @@ import { createClient } from "redis";
 
 const app = express();
 connectDB();
+app.use(cors());
 
 // Connecting to redis
 export const client = createClient({

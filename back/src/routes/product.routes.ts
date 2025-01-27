@@ -1,6 +1,6 @@
 import express from "express";
 const productRouter = express.Router();
-
+import upload from "../config/multerConfig";
 import {
   obtenerProductos,
   obtenerProductoId,
@@ -13,6 +13,6 @@ productRouter.get("/", obtenerProductos);
 productRouter.get("/:id", obtenerProductoId);
 productRouter.patch("/:id", editarProducto);
 productRouter.delete("/:id", eliminarProducto);
-productRouter.post("/", agregarProducto);
+productRouter.post("/", upload.single("image"), agregarProducto);
 
 export default productRouter;
