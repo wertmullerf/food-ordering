@@ -123,6 +123,8 @@ export const evaluarEstatus = async (data: IMercadoPagoResponse) => {
 export const webhook = async (req: Request, res: Response) => {
   const payment = req.query;
   const paymentID = payment["data.id"];
+  //const paymentID = payment.payment_id;
+  console.log(paymentID);
   try {
     const response = await fetch(
       `https://api.mercadopago.com/v1/payments/${paymentID}`,
@@ -133,9 +135,10 @@ export const webhook = async (req: Request, res: Response) => {
         },
       }
     );
+
     if (response.ok) {
       const data: IMercadoPagoResponse = await response.json();
-      console.log("EXTERNAL REFERENCE \n", data.external_reference);
+      //console.log("EXTERNAL REFERENCE \n", data.external_reference);
       evaluarEstatus(data);
     }
     res.sendStatus(200);

@@ -78,7 +78,7 @@ const generarHtmlExitoso = (
 
                       <p><strong>${codigo_de_seguimiento}</strong></p>
                       <p>Puedes hacer clic en el siguiente botón para ver más detalles sobre el estado de tu envío:</p>
-                      <a href=${BASE_NGROK_URL}/api/order/${codigo_de_seguimiento}" class="button">Ver mi pedido</a>
+                      <a href=${BASE_NGROK_URL}/api/order/${codigo_de_seguimiento} class="button">Ver mi pedido</a>
                          <!-- Tabla de productos -->
             <h3>Detalle de tu pedido:</h3>
             <table>

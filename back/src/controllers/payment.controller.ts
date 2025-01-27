@@ -50,8 +50,7 @@ export const crearOrden = async (req: Request, res: Response) => {
           expiration_date_to: new Date(
             Date.now() + 20 * 60 * 1000
           ).toISOString(), // 20 minutos después
-          notification_url: `${BASE_NGROK_URL}/api/payment/webhook`, //url del ngrok + /api/payment/webhook
-
+          notification_url: `${BASE_NGROK_URL}/api/payment/webhook`,
           external_reference: pago_id,
         },
 
@@ -59,7 +58,7 @@ export const crearOrden = async (req: Request, res: Response) => {
           timeout: 5000,
         },
       });
-      console.log(BASE_NGROK_URL);
+      console.log(`${BASE_NGROK_URL}/api/payment/webhook`);
       const paymentUrl = response?.init_point;
 
       //console.log(response);
@@ -73,14 +72,14 @@ export const crearOrden = async (req: Request, res: Response) => {
         // Responder con la URL de pago generada
         res.json({ url: paymentUrl });
       } else {
-        res.status(400).json({
-          message: "Error al generar la preferencia de pago",
-        });
+        res
+          .status(400)
+          .json({ message: "Error al generar la preferencia de pago" });
       }
     } catch (err) {
-      res.status(500).json({
-        message: "Error al crear la preferencia de pago",
-      });
+      res
+        .status(500)
+        .json({ message: "Error al crear la preferencia de pago" });
     }
   } catch (error) {
     res.status(500).json({ message: "Error al crear la orden de pago" });

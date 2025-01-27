@@ -1,5 +1,6 @@
 import express from "express";
 import "dotenv/config";
+import morgan from "morgan";
 
 import { connectDB } from "./config/db";
 
@@ -14,7 +15,7 @@ import paymentRouter from "./routes/payment.routes";
 import "../src/services/cron/limpiarPedidosPendientes";
 const app = express();
 connectDB();
-
+app.use(morgan("dev"));
 const server = http.createServer(app);
 const io = new Server(server);
 

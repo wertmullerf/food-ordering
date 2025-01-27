@@ -21,7 +21,7 @@ const pedidoSchema: Schema = new Schema<IPedido>(
       },
     ],
     total: { type: Number, required: true },
-    pago_id: { type: String }, //El es collector.id
+    pago_id: { type: String }, //El es external_reference
   },
   {
     timestamps: true,
