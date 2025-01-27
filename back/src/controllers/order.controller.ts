@@ -1,11 +1,17 @@
 import Pedido from "../models/Pedido";
 import { Request, Response } from "express";
 import { IPedido } from "../interfaces/IPedido";
-import { obtenerRecursoPorId } from "../helpers/dbfunctions";
+import { obtenerInfoRedis, saveResult } from "../helpers/redisfunction";
 
 export const obtenerOrdenes = async (req: Request, res: Response) => {
   try {
+    const reply = await obtenerInfoRedis(res, "order");
+    if (reply) {
+      res.json(reply);
+      return;
+    }
     const orders = await Pedido.find().lean();
+    await saveResult(orders, "order");
     res.json({ pedidos: orders });
   } catch (error) {
     console.log(error);
@@ -13,8 +19,6 @@ export const obtenerOrdenes = async (req: Request, res: Response) => {
 };
 
 export const obtenerOrdenId = async (req: Request, res: Response) => {
-  //await obtenerRecursoPorId(Pedido, req.params.id, res);
-
   try {
     const { id } = req.params;
     const recurso = await Pedido.findOne({ pago_id: id });

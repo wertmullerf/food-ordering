@@ -1,18 +1,25 @@
 import Usuario from "../models/Usuario";
 import { Request, Response } from "express";
 import { obtenerRecursoPorId } from "../helpers/dbfunctions";
+import { obtenerInfoRedis, saveResult } from "../helpers/redisfunction";
 
 export const obtenerUsuarios = async (req: Request, res: Response) => {
   try {
-    const users = await Usuario.find().lean();
-    res.json({ usuarios: users });
+    const reply = await obtenerInfoRedis(res, "user");
+    if (reply) {
+      res.json(reply);
+      return;
+    }
+    const usuarios = await Usuario.find().lean();
+    await saveResult(usuarios, "user");
+    res.json({ users: usuarios });
   } catch (error) {
     console.log(error);
   }
 };
 
 export const obtenerUsuarioId = async (req: Request, res: Response) => {
-  await obtenerRecursoPorId(Usuario, req.params.id, res);
+  await obtenerRecursoPorId(Usuario, req.params.id, res, "user");
 };
 
 export const editarUsuario = async (req: Request, res: Response) => {
