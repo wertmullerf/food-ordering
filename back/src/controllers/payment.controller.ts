@@ -11,6 +11,7 @@ import {
   crearListaItems,
   generarExternalReference,
 } from "../helpers/paymentfunctions";
+import { crearDireccion } from "../services/address.service";
 
 const client = new MercadoPagoConfig({
   accessToken: ACCESS_TOKEN,
@@ -66,8 +67,10 @@ export const crearOrden = async (req: Request, res: Response) => {
         // Buscar o crear el usuario
         const usuario = await buscarCrearUsuario(payerData);
 
+        const direccion: string = await crearDireccion(payerData["address"]);
+
         // Crear el pedido con el paymentID y el usuario
-        await crearPedido(productos, usuario, pago_id);
+        await crearPedido(productos, usuario, direccion, pago_id);
 
         // Responder con la URL de pago generada
         res.json({ url: paymentUrl });

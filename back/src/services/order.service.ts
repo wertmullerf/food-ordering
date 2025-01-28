@@ -1,12 +1,12 @@
 import { PedidoEstatus } from "../enums/PedidoEstatus";
 import { IPedidoProducto } from "../interfaces/IPedidoProducto";
-import { IProducto } from "../interfaces/IProducto";
 import { IUsuario } from "../interfaces/IUser";
 import Pedido from "../models/Pedido";
 
 export const crearPedido = async (
   productos: IPedidoProducto[],
   usuario: IUsuario,
+  direccion: string,
   pago_id?: String
 ) => {
   const total = productos.reduce(
@@ -17,6 +17,7 @@ export const crearPedido = async (
 
   const nuevoPedido = new Pedido({
     usuario_id: usuario._id,
+    direccion_id: direccion,
     estatus: PedidoEstatus.Pendiente,
     productos,
     total, // El total calculado

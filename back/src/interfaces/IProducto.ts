@@ -1,4 +1,5 @@
 import { Document } from "mongoose";
+import { categorias } from "../enums/categorias";
 
 export interface IProducto extends Document {
   nombre: string;
@@ -6,4 +7,6 @@ export interface IProducto extends Document {
   stock: number;
   costo?: number;
   imageUrl: string;
+  descripcion: string;
+  categoria: categorias;
 }
