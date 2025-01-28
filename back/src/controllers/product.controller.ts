@@ -4,6 +4,7 @@ import { IProducto } from "../interfaces/IProducto";
 import { obtenerRecursoPorId } from "../helpers/dbfunctions";
 import { obtenerInfoRedis, saveResult } from "../helpers/redisfunction";
 import upload from "../config/multerConfig"; // Importa la configuración de Multer
+import { BASE_LOCAL_URL } from "../config";
 
 export const obtenerProductos = async (req: Request, res: Response) => {
   try {
@@ -87,7 +88,7 @@ export const agregarProducto = async (
       precio: parseFloat(precio), // Convierte a número
       stock: parseInt(stock, 10), // Convierte a número entero
       costo: parseFloat(costo), // Convierte a número
-      imageUrl: `/uploads/${req.file.filename}`, // Guarda la ruta de la imagen
+      imageUrl: `${BASE_LOCAL_URL}/uploads/${req.file.filename}`, // Guarda la ruta de la imagen
     });
 
     // Guarda el producto en la base de datos
