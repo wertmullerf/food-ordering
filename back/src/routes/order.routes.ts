@@ -8,9 +8,11 @@ import {
   eliminarOrden,
 } from "../controllers/order.controller";
 
+import { verifyToken } from "../middlewares/authMiddleware";
+
 orderRouter.get("/", obtenerOrdenes);
 orderRouter.get("/:id", obtenerOrdenId);
-orderRouter.patch("/id", editarOrden);
-orderRouter.delete("/id", eliminarOrden);
+orderRouter.patch("/id", verifyToken, editarOrden);
+orderRouter.delete("/id", verifyToken, eliminarOrden);
 
 export default orderRouter;

@@ -9,10 +9,12 @@ import {
   agregarProducto,
 } from "../controllers/product.controller";
 
-productRouter.get("/", obtenerProductos);
+import { verifyToken } from "../middlewares/authMiddleware";
+
+productRouter.get("/", verifyToken, obtenerProductos);
 productRouter.get("/:id", obtenerProductoId);
-productRouter.patch("/:id", editarProducto);
-productRouter.delete("/:id", eliminarProducto);
-productRouter.post("/", upload.single("image"), agregarProducto);
+productRouter.patch("/:id", verifyToken, editarProducto);
+productRouter.delete("/:id", verifyToken, eliminarProducto);
+productRouter.post("/", upload.single("image"), verifyToken, agregarProducto);
 
 export default productRouter;

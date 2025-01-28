@@ -12,6 +12,7 @@ import http from "http";
 import { initializeSockets } from "./sockets/index";
 import { Server } from "socket.io";
 import paymentRouter from "./routes/payment.routes";
+import authRouter from "./routes/auth.routes";
 import "../src/services/cron/limpiarPedidosPendientes";
 import { createClient } from "redis";
 
@@ -40,6 +41,8 @@ app.use("/api/user", userRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/product", productRouter);
+app.use("/auth/login", authRouter);
+
 const main = async () => {
   await client.connect();
   app.listen(PORT);
