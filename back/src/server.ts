@@ -15,7 +15,8 @@ import paymentRouter from "./routes/payment.routes";
 import authRouter from "./routes/auth.routes";
 import "../src/services/cron/limpiarPedidosPendientes";
 import { createClient } from "redis";
-
+import path from "path";
+const PORT = process.env.PORT;
 const app = express();
 connectDB();
 app.use(cors());
@@ -30,7 +31,8 @@ const io = new Server(server);
 
 initializeSockets(io);
 
-const PORT = process.env.PORT;
+app.use(express.static(path.join(__dirname, "../public")));
+
 app.use(bodyParser.json({ limit: "50mb", type: "application/json" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.get("/", (req, res) => {

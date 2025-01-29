@@ -11,7 +11,7 @@ import {
 
 import { verifyToken } from "../middlewares/authMiddleware";
 
-productRouter.get("/", verifyToken, obtenerProductos);
+productRouter.get("/", obtenerProductos);
 productRouter.get("/:id", obtenerProductoId);
 productRouter.patch("/:id", verifyToken, editarProducto);
 productRouter.delete("/:id", verifyToken, eliminarProducto);
