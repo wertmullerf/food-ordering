@@ -3,6 +3,17 @@ import { getProducts } from "../services/productService";
 import ProductCard from "../components/ProductCard";
 import { Product } from "../types/product";
 import "./Home.css";
+
+const agruparPorCategoria = (
+    productos: Product[]
+): Record<string, Product[]> => {
+    return productos.reduce((acc, producto) => {
+        acc[producto.categoria] = acc[producto.categoria] || [];
+        acc[producto.categoria].push(producto);
+        return acc;
+    }, {} as Record<string, Product[]>);
+};
+
 const Home: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
 
@@ -18,27 +29,26 @@ const Home: React.FC = () => {
     }, []);
 
     return (
-        // <div>
-        //     <h1>Nuestras Burgers 🍔</h1>
-        //     <div>
-        //         {products.map((product) => (
-        //             <ProductCard  key={product._id} product={product} />
-        //         ))}
-        //     </div>
-        // </div>
         <div className="container mt-4">
-            <h2 className="mb-3 text-center ">Lista de Productos 🍔</h2>
+            <h2 className="mb-3 text-center">Lista de Productos 🍔</h2>
             <div className="table-responsive">
-                <table className="table table-striped">
-                    <tbody>
-                        {products.map((producto) => (
-                            <ProductCard
-                                key={producto._id}
-                                producto={producto}
-                            />
-                        ))}
-                    </tbody>
-                </table>
+                {Object.entries(agruparPorCategoria(products)).map(
+                    ([categoria, items]) => (
+                        <div key={categoria}>
+                            <h3 className="mt-4">{categoria}</h3>
+                            <table className="table table-striped">
+                                <tbody>
+                                    {items.map((producto) => (
+                                        <ProductCard
+                                            key={producto._id}
+                                            producto={producto}
+                                        />
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )
+                )}
             </div>
         </div>
     );

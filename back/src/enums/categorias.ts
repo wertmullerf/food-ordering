@@ -1,4 +1,5 @@
-export enum categorias {
-  "sda" = "sda",
-  "otro" = "otro", // Agrega más categorías
+export enum Categorias {
+    BEBIDAS = "bebidas",
+    HAMBURGUESAS = "hamburguesas", // Agrega más categorías
+    PAPAS = "papas",
 }

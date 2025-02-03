@@ -31,9 +31,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                 <div>
                     <p className="m-0 fw-bold">{producto.nombre}</p>
                     <p className="m-0 text-muted w-50">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit. Amet mollitia nulla consequuntur, corporis esse
-                        quod rem.
+                        {producto.descripcion}
                     </p>
                 </div>
             </td>
