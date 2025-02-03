@@ -2,6 +2,7 @@ import Usuario from "../models/Usuario";
 import { Request, Response } from "express";
 import { obtenerRecursoPorId } from "../helpers/dbfunctions";
 import { obtenerInfoRedis, saveResult } from "../helpers/redisfunction";
+import { verificarCamposUser } from "../helpers/validatefunctions";
 
 export const obtenerUsuarios = async (req: Request, res: Response) => {
   try {
@@ -52,6 +53,11 @@ export const eliminarUsuario = async (req: Request, res: Response) => {
 export const agregarUsuario = async (req: Request, res: Response) => {
   try {
     const { nombre, apellido, email } = req.body;
+    const user = { nombre, apellido, email };
+    if (!verificarCamposUser(user)) {
+      res.status(400).json({ error: "Faltan campos requeridos" });
+      return;
+    }
     const existingUser = await Usuario.findOne({ email });
     if (existingUser) {
       res.json("Usuario ya registrado");

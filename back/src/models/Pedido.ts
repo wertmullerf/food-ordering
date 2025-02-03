@@ -6,6 +6,12 @@ import { PedidoEstatus } from "../enums/PedidoEstatus";
 const pedidoSchema: Schema = new Schema<IPedido>(
   {
     usuario_id: { type: Schema.Types.ObjectId, ref: "Usuario", required: true },
+    direccion_id: {
+      type: Schema.Types.ObjectId,
+      ref: "Direccion",
+      required: true,
+    },
+
     estatus: {
       type: String,
       enum: Object.values(PedidoEstatus),

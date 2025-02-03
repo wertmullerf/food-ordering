@@ -5,6 +5,7 @@ import { obtenerRecursoPorId } from "../helpers/dbfunctions";
 import { obtenerInfoRedis, saveResult } from "../helpers/redisfunction";
 import upload from "../config/multerConfig"; // Importa la configuración de Multer
 import { BASE_LOCAL_URL } from "../config";
+import { verificarCamposProduct } from "../helpers/validatefunctions";
 
 export const obtenerProductos = async (req: Request, res: Response) => {
   try {
@@ -74,6 +75,11 @@ export const agregarProducto = async (
 
     // Extrae los datos del cuerpo de la solicitud
     const { nombre, precio, stock, costo } = req.body;
+    const product = { nombre, precio, stock, costo };
+    if (!verificarCamposProduct(product)) {
+      res.status(400).json({ error: "Faltan campos requeridos" });
+      return;
+    }
 
     // Verifica si el producto ya existe
     const productoExistente = await Producto.findOne({ nombre }).lean();

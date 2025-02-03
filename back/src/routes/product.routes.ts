@@ -15,10 +15,6 @@ productRouter.get("/", obtenerProductos);
 productRouter.get("/:id", obtenerProductoId);
 productRouter.patch("/:id", verifyToken, editarProducto);
 productRouter.delete("/:id", verifyToken, eliminarProducto);
-productRouter.post(
-    "/",
-    upload.single("image"),
-    /*verifyToken,*/ agregarProducto
-);
+productRouter.post("/", upload.single("image"), verifyToken, agregarProducto);
 
 export default productRouter;

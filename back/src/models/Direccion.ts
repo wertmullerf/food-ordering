@@ -4,7 +4,6 @@ import { IDireccion } from "../interfaces/IDireccion";
 // Esquema de la dirección
 const direccionSchema: Schema = new Schema<IDireccion>(
   {
-    usuario_id: { type: Schema.Types.ObjectId, ref: "Usuario", required: true },
     calle: { type: String, required: true },
     altura: { type: Number, required: true },
     numero: { type: Number, required: true },
