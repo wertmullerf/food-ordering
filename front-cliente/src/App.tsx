@@ -1,8 +1,13 @@
 import React from "react";
 import AppRouter from "./routes/AppRouter";
 import "./App.css";
+import { CartProvider } from "./context/CartContext";
 const App: React.FC = () => {
-    return <AppRouter />;
+    return (
+        <CartProvider>
+            <AppRouter />
+        </CartProvider>
+    );
 };
 
 export default App;

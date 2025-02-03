@@ -7,11 +7,20 @@ import "./Home.css";
 const agruparPorCategoria = (
     productos: Product[]
 ): Record<string, Product[]> => {
+    if (!Array.isArray(productos)) {
+        console.error("productos no es un array:", productos);
+        return {}; // Retorna un objeto vacío en caso de que no sea un array
+    }
+
     return productos.reduce((acc, producto) => {
         acc[producto.categoria] = acc[producto.categoria] || [];
         acc[producto.categoria].push(producto);
         return acc;
     }, {} as Record<string, Product[]>);
+};
+
+const capitalize = (word: string) => {
+    return String(word).charAt(0).toUpperCase() + String(word).slice(1);
 };
 
 const Home: React.FC = () => {
@@ -20,7 +29,6 @@ const Home: React.FC = () => {
     useEffect(() => {
         getProducts()
             .then((data) => {
-                console.log(data); // ✅ Mostrar directamente los productos
                 setProducts(data);
             })
             .catch((error) =>
@@ -35,7 +43,7 @@ const Home: React.FC = () => {
                 {Object.entries(agruparPorCategoria(products)).map(
                     ([categoria, items]) => (
                         <div key={categoria}>
-                            <h3 className="mt-4">{categoria}</h3>
+                            <h3 className="mt-4">{capitalize(categoria)}</h3>
                             <table className="table table-striped">
                                 <tbody>
                                     {items.map((producto) => (

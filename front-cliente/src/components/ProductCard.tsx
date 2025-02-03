@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { Product } from "../types/product";
 import "./ProductCard.css";
 
@@ -7,12 +6,13 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
-    console.log(producto.imageUrl);
     return (
         <tr
             className="align-middle border-bottom pointer"
             onClick={() => (window.location.href = `/producto/${producto._id}`)}
-            style={{ cursor: "pointer" }}
+            style={{
+                cursor: "pointer",
+            }}
         >
             <td className="text-center">
                 <img

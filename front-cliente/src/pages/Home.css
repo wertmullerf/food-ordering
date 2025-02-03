@@ -30,3 +30,21 @@
         width: 100% !important;
     }
 }
+/*
+.custom-table {
+    background-color: #333 !important;
+    color: white !important;
+}
+
+.custom-table tbody tr:nth-child(odd) {
+    background-color: #444 !important; 
+}
+
+.custom-table tbody tr:nth-child(even) {
+    background-color: #333 !important; 
+}
+
+.custom-table td p {
+    color: #ccc !important; 
+}
+*/
