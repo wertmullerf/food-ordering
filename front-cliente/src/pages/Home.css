@@ -1,0 +1,32 @@
+@media (max-width: 768px) {
+    /* Ajustar la tabla para dispositivos móviles */
+    .table-responsive {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table th,
+    .table td {
+        padding: 1rem; /* Aumenta el padding para que sea más fácil de tocar */
+    }
+
+    /* Opcional: Hacer que el tr sea más fácil de tocar */
+    .details-button {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Ajustes para la imagen, hacerla más pequeña en pantallas móviles */
+    .img-fluid {
+        max-width: 80px; /* Ajusta el tamaño de la imagen */
+        height: auto;
+    }
+
+    /* Hacer que el texto se ajuste mejor en móviles */
+    .text-muted {
+        font-size: 0.875rem; /* Reduce el tamaño del texto en pantallas pequeñas */
+        width: 100% !important;
+    }
+}
