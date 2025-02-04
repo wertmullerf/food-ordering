@@ -6,7 +6,7 @@ import { obtenerInfoRedis, saveResult } from "../helpers/redisfunction";
 import upload from "../config/multerConfig"; // Importa la configuración de Multer
 import { BASE_LOCAL_URL } from "../config";
 import { verificarCamposProduct } from "../helpers/validatefunctions";
-import { Categorias } from "../enums/categorias";
+import { Categorias } from "../enums/Categorias";
 
 export const obtenerProductos = async (req: Request, res: Response) => {
     try {

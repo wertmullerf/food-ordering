@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { getProducts } from "../services/productService";
 import ProductCard from "../components/ProductCard";
 import { Product } from "../types/product";
 import "./Home.css";
+import { useLocation } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 const agruparPorCategoria = (
     productos: Product[]
@@ -24,23 +26,37 @@ const capitalize = (word: string) => {
 };
 
 const Home: React.FC = () => {
-    const [products, setProducts] = useState<Product[]>([]);
+    const location = useLocation();
 
+    const {
+        data: fetchedProducts = [],
+        isLoading,
+        error,
+        refetch,
+    } = useQuery({
+        queryKey: ["products"],
+        queryFn: async () => {
+            const data = await getProducts();
+            return data;
+        },
+        staleTime: 1000 * 60 * 5, // Cache de 5 minutos (evita refetch innecesario)
+        refetchOnMount: true, // Se asegura de hacer un fetch al montar
+        refetchOnWindowFocus: false, // No recarga datos cuando se vuelve a la ventana
+        retry: 2, // Intenta 2 veces si hay un error en la API
+    });
+    // Forzar actualización al cambiar de ruta (si lo necesitas)
     useEffect(() => {
-        getProducts()
-            .then((data) => {
-                setProducts(data);
-            })
-            .catch((error) =>
-                console.error("Error al obtener productos:", error)
-            );
-    }, []);
+        refetch();
+    }, [location.key, refetch]);
+
+    if (isLoading) return <p>Cargando productos...</p>;
+    if (error) return <p>Error al cargar productos</p>;
 
     return (
         <div className="container mt-4">
             <h2 className="mb-3 text-center">Lista de Productos 🍔</h2>
             <div className="table-responsive">
-                {Object.entries(agruparPorCategoria(products)).map(
+                {Object.entries(agruparPorCategoria(fetchedProducts)).map(
                     ([categoria, items]) => (
                         <div key={categoria}>
                             <h3 className="mt-4">{capitalize(categoria)}</h3>

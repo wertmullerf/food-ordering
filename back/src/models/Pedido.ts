@@ -4,35 +4,39 @@ import { PedidoEstatus } from "../enums/PedidoEstatus";
 
 // Esquema del pedido
 const pedidoSchema: Schema = new Schema<IPedido>(
-  {
-    usuario_id: { type: Schema.Types.ObjectId, ref: "Usuario", required: true },
-    direccion_id: {
-      type: Schema.Types.ObjectId,
-      ref: "Direccion",
-      required: true,
-    },
+    {
+        usuario_id: {
+            type: Schema.Types.ObjectId,
+            ref: "Usuario",
+            required: true,
+        },
+        direccion_id: {
+            type: Schema.Types.ObjectId,
+            ref: "Direccion",
+            required: true,
+        },
 
-    estatus: {
-      type: String,
-      enum: Object.values(PedidoEstatus),
-      required: true,
-      //lowercase: true,
+        estatus: {
+            type: String,
+            enum: Object.values(PedidoEstatus),
+            required: true,
+            //lowercase: true,
+        },
+        productos: [
+            {
+                producto_id: { type: Schema.Types.ObjectId, ref: "Producto" },
+                nombre: { type: String, required: true },
+                cantidad: { type: Number, required: true },
+                precio_unitario: { type: Number, required: true },
+            },
+        ],
+        total: { type: Number, required: true },
+        pago_id: { type: String }, //El es external_reference
     },
-    productos: [
-      {
-        producto_id: { type: Schema.Types.ObjectId, ref: "Producto" },
-        nombre: { type: String, required: true },
-        cantidad: { type: Number, required: true },
-        precio_unitario: { type: Number, required: true },
-      },
-    ],
-    total: { type: Number, required: true },
-    pago_id: { type: String }, //El es external_reference
-  },
-  {
-    timestamps: true,
-    strict: true,
-  }
+    {
+        timestamps: true,
+        strict: true,
+    }
 );
 
 // Modelo del pedido

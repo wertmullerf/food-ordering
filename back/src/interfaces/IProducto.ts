@@ -1,5 +1,6 @@
 import { Document } from "mongoose";
-import { Categorias } from "../enums/categorias";
+import { Categorias } from "../enums/Categorias";
+import { IIngrediente } from "./IIngrediente";
 
 export interface IProducto extends Document {
     nombre: string;
@@ -9,4 +10,5 @@ export interface IProducto extends Document {
     imageUrl: string;
     descripcion: string;
     categoria: Categorias;
+    ingredientes: IIngrediente["_id"][];
 }

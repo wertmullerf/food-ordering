@@ -2,4 +2,3 @@ node_modules
 .env
 ngrok.exe
 docker-compose.yml
-public

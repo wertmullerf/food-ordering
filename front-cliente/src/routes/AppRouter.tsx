@@ -5,20 +5,26 @@ import Home from "../pages/Home";
 import ProductDetail from "../pages/ProductDetail";
 import CartPage from "../pages/CartPage";
 import Navbar from "../components/Navbar";
+import CartFooter from "../components/CartFooter";
 
 const AppRouter: React.FC = () => {
-  return (
-    <Router>
-      <Navbar />
-      <div className="container mt-4">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/producto/:id" element={<ProductDetail />} />
-          <Route path="/carrito" element={<CartPage />} />
-        </Routes>
-      </div>
-    </Router>
-  );
+    return (
+        <Router>
+            <Navbar />
+            <div className="main-content" style={{ paddingBottom: "100px" }}>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route
+                        path="/producto/:id"
+                        element={<ProductDetail />}
+                        key="detail"
+                    />
+                    <Route path="/carrito" element={<CartPage />} />
+                </Routes>
+            </div>
+            <CartFooter />
+        </Router>
+    );
 };
 
 export default AppRouter;

@@ -48,3 +48,27 @@
     color: #ccc !important; 
 }
 */
+table {
+    border-collapse: collapse; /* Elimina espacios entre celdas */
+    width: 100%;
+}
+
+td {
+    padding: 5px 10px; /* Reduce el padding interno */
+    vertical-align: middle; /* Asegura alineación vertical correcta */
+}
+
+.product-card img {
+    width: 80px; /* Reduce el tamaño de la imagen */
+    height: 80px;
+}
+
+.product-description {
+    margin: 0;
+    padding: 0;
+    font-size: 14px; /* Reduce el tamaño de la fuente */
+}
+
+.product-price {
+    font-size: 14px; /* Ajusta el tamaño del precio */
+}
