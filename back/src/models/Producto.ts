@@ -16,6 +16,7 @@ const productoSchema: Schema = new Schema<IProducto>(
       enum: Object.values(categorias), // Asegúrate de que enum es un array de strings
       required: true,
     },
+    descuento: { type: Number, required: true },
   },
   {
     strict: true,

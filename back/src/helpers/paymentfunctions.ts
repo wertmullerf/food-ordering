@@ -9,6 +9,9 @@ import { v4 as uuidv4 } from "uuid";
 import { EmailService, enviarCorreoExitoso } from "../services/email/index";
 import { IUsuario } from "../interfaces/IUser";
 import { ACCESS_TOKEN } from "../config";
+import { Preference } from "mercadopago";
+("mercadopago");
+import { io } from "../server";
 /*---------------NO TOCAR (TIENE HORAS ENCIMA) -------------------*/
 
 export const exitoso = async (id: String) => {
@@ -80,7 +83,6 @@ export const evaluarEstatus = async (data: IMercadoPagoResponse) => {
     case MercadoPagoEstatus.AUTHORIZED:
       // Ejecuta la función para estados "aprobados/autorizados"
       exitoso(data.external_reference!);
-
       if (data.external_reference) {
         const dataUsuario: IUsuario | null = await buscarUsuarioPorIdPago(
           data.external_reference
@@ -89,6 +91,9 @@ export const evaluarEstatus = async (data: IMercadoPagoResponse) => {
         const dataPedidoProducto = await buscarProductosPorIdPago(
           data.external_reference
         );
+
+        io.to("admins").emit("nuevoPedido", dataUsuario, dataPedidoProducto);
+
         const htmlBody = enviarCorreoExitoso(
           // data.payer.first_name,
           dataUsuario?.nombre || "",
@@ -170,4 +175,30 @@ export const crearListaItems = (productos: IPedidoProducto[]) => {
 
 export const generarExternalReference = () => {
   return uuidv4();
+};
+
+export const generarPreferencia = async (
+  preference: Preference,
+  items: any,
+  pago_id: any,
+  BASE_NGROK_URL: string
+) => {
+  return await preference.create({
+    body: {
+      items,
+      back_urls: {
+        success: "https://www.google.com.ar",
+      },
+      auto_return: "approved",
+      expires: true, // Habilitar expiración
+      expiration_date_from: new Date().toISOString(), // Desde ahora
+      expiration_date_to: new Date(Date.now() + 20 * 60 * 1000).toISOString(), // 20 minutos después
+      notification_url: `${BASE_NGROK_URL}/api/payment/webhook`,
+      external_reference: pago_id,
+    },
+
+    requestOptions: {
+      timeout: 5000,
+    },
+  });
 };

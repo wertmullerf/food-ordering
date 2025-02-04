@@ -9,4 +9,5 @@ export interface IProducto extends Document {
   imageUrl: string;
   descripcion: string;
   categoria: categorias;
+  descuento: number;
 }

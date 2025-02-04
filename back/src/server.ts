@@ -26,7 +26,7 @@ export const client = createClient({
 });
 app.use(morgan("dev"));
 const server = http.createServer(app);
-const io = new Server(server);
+export const io = new Server(server);
 
 initializeSockets(io);
 

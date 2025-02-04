@@ -10,6 +10,7 @@ import {
   crearPayer,
   crearListaItems,
   generarExternalReference,
+  generarPreferencia,
 } from "../helpers/paymentfunctions";
 import { crearDireccion } from "../services/address.service";
 
@@ -28,52 +29,27 @@ export const crearOrden = async (req: Request, res: Response) => {
       res.status(400).json({ message: "Faltan datos requeridos" });
       return;
     }
-
     const items = crearListaItems(productos);
-
-    // Configuración del comprador (Payer)
-    const payer: PayerRequest = crearPayer(payerData);
-
+    const payer: PayerRequest = crearPayer(payerData); // Configuración del comprador (Payer)
     const preference = new Preference(client);
-
     try {
       const pago_id = generarExternalReference();
-      // Crear la preferencia de pago
-      const response: PreferenceResponse = await preference.create({
-        body: {
-          items,
-          back_urls: {
-            success: "https://www.google.com.ar",
-          },
-          auto_return: "approved",
-          expires: true, // Habilitar expiración
-          expiration_date_from: new Date().toISOString(), // Desde ahora
-          expiration_date_to: new Date(
-            Date.now() + 20 * 60 * 1000
-          ).toISOString(), // 20 minutos después
-          notification_url: `${BASE_NGROK_URL}/api/payment/webhook`,
-          external_reference: pago_id,
-        },
-
-        requestOptions: {
-          timeout: 5000,
-        },
-      });
-      console.log(`${BASE_NGROK_URL}/api/payment/webhook`);
+      const response: PreferenceResponse = await generarPreferencia(
+        // Crear la preferencia de pago
+        preference,
+        items,
+        pago_id,
+        BASE_NGROK_URL!
+      );
+      //console.log(`${BASE_NGROK_URL}/api/payment/webhook`);
       const paymentUrl = response?.init_point;
 
       //console.log(response);
       if (paymentUrl) {
-        // Buscar o crear el usuario
-        const usuario = await buscarCrearUsuario(payerData);
-
+        const usuario = await buscarCrearUsuario(payerData); // Buscar o crear el usuario
         const direccion: string = await crearDireccion(payerData["address"]);
-
-        // Crear el pedido con el paymentID y el usuario
-        await crearPedido(productos, usuario, direccion, pago_id);
-
-        // Responder con la URL de pago generada
-        res.json({ url: paymentUrl });
+        await crearPedido(productos, usuario, direccion, pago_id); // Crear el pedido con el paymentID y el usuario
+        res.json({ url: paymentUrl }); // Responder con la URL de pago generada
       } else {
         res
           .status(400)
