@@ -1,89 +1,92 @@
 // context/CartContext.tsx
-import React, { createContext, useContext, useState, ReactNode } from "react";
-
-interface CartItem {
-    id: string;
-    nombre: string;
-    precio: number;
-    cantidad: number;
-}
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from "react";
+import { CartItem } from "../types/product";
 
 interface CartContextType {
-    carrito: CartItem[];
-    agregarAlCarrito: (item: CartItem) => void;
-    eliminarDelCarrito: (id: string) => void;
-    actualizarCantidad: (id: string, cantidad: number) => void;
-    totalCarrito: number;
+  carrito: CartItem[];
+  agregarAlCarrito: (item: Omit<CartItem, "cantidad">) => void;
+  eliminarDelCarrito: (id: string) => void;
+  actualizarCantidad: (id: string, cantidad: number) => void;
+  totalCarrito: number;
+  itemsEnCarrito: number;
 }
 
-// Definir el tipo para las propiedades del CartProvider
 interface CartProviderProps {
-    children: ReactNode; // Esto permite que el componente reciba children
+  children: ReactNode;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const useCart = () => {
-    const context = useContext(CartContext);
-    if (!context) {
-        throw new Error("useCart debe ser usado dentro de un CartProvider");
-    }
-    return context;
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error("useCart debe usarse dentro de un CartProvider");
+  }
+  return context;
 };
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
-    const [carrito, setCarrito] = useState<CartItem[]>([]);
+  const [carrito, setCarrito] = useState<CartItem[]>(() => {
+    const savedCart = localStorage.getItem("cart");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
-    const agregarAlCarrito = (item: CartItem) => {
-        console.log("Entre");
-        setCarrito((prevCarrito) => {
-            const itemExistente = prevCarrito.find(
-                (prod) => prod.id === item.id
-            );
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(carrito));
+  }, [carrito]);
 
-            if (itemExistente) {
-                return prevCarrito.map((prod) =>
-                    prod.id === item.id
-                        ? { ...prod, cantidad: prod.cantidad + item.cantidad }
-                        : prod
-                );
-            } else {
-                return [...prevCarrito, item];
-            }
-        });
-        console.log(carrito);
-    };
-
-    const eliminarDelCarrito = (id: string) => {
-        setCarrito((prevCarrito) =>
-            prevCarrito.filter((item) => item.id !== id)
+  const agregarAlCarrito = useCallback((item: Omit<CartItem, "cantidad">) => {
+    setCarrito((prev) => {
+      const existing = prev.find((p) => p._id === item._id);
+      if (existing) {
+        return prev.map((p) =>
+          p._id === item._id ? { ...p, cantidad: p.cantidad + 1 } : p
         );
-    };
+      }
+      return [...prev, { ...item, cantidad: 1 }];
+    });
+  }, []);
 
-    const actualizarCantidad = (id: string, cantidad: number) => {
-        setCarrito((prevCarrito) =>
-            prevCarrito.map((item) =>
-                item.id === id ? { ...item, cantidad } : item
-            )
-        );
-    };
+  const eliminarDelCarrito = useCallback((id: string) => {
+    setCarrito((prev) => prev.filter((item) => item._id !== id));
+  }, []);
 
-    const totalCarrito = carrito.reduce(
-        (total, item) => total + item.precio * item.cantidad,
-        0
+  const actualizarCantidad = useCallback((id: string, cantidad: number) => {
+    if (cantidad < 1) return;
+    setCarrito((prev) =>
+      prev.map((item) => (item._id === id ? { ...item, cantidad } : item))
     );
+  }, []);
 
-    return (
-        <CartContext.Provider
-            value={{
-                carrito,
-                agregarAlCarrito,
-                eliminarDelCarrito,
-                actualizarCantidad,
-                totalCarrito,
-            }}
-        >
-            {children}
-        </CartContext.Provider>
-    );
+  const totalCarrito = carrito.reduce(
+    (total, item) => total + item.precio * item.cantidad,
+    0
+  );
+
+  const itemsEnCarrito = carrito.reduce(
+    (total, item) => total + item.cantidad,
+    0
+  );
+
+  return (
+    <CartContext.Provider
+      value={{
+        carrito,
+        agregarAlCarrito,
+        eliminarDelCarrito,
+        actualizarCantidad,
+        totalCarrito,
+        itemsEnCarrito,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
 };

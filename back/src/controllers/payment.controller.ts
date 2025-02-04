@@ -18,7 +18,6 @@ const client = new MercadoPagoConfig({
   options: { timeout: 5000, idempotencyKey: "abc" },
 });
 const payment = new Payment(client);
-
 export const crearOrden = async (req: Request, res: Response) => {
   try {
     const { payerData } = req.body;
@@ -61,7 +60,6 @@ export const crearOrden = async (req: Request, res: Response) => {
       });
       console.log(`${BASE_NGROK_URL}/api/payment/webhook`);
       const paymentUrl = response?.init_point;
-
       //console.log(response);
       if (paymentUrl) {
         // Buscar o crear el usuario
