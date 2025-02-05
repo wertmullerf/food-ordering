@@ -1,4 +1,4 @@
-import { Product } from "../types/product";
+import { Product } from "../types/IProducto";
 import "./ProductCard.css";
 import { useNavigate } from "react-router-dom";
 interface ProductCardProps {

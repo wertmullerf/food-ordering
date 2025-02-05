@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getProductById } from "../services/productService";
-import { CartItem } from "../types/product";
+import { CartItem } from "../types/IProducto";
 import { useCart } from "../context/CartContext";
 
 const ProductDetail: React.FC = () => {

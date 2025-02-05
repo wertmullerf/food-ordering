@@ -1,29 +1,12 @@
 import React, { useEffect } from "react";
 import { getProducts } from "../services/productService";
 import ProductCard from "../components/ProductCard";
-import { Product } from "../types/product";
+import { Product } from "../types/IProducto";
 import "./Home.css";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-
-const agruparPorCategoria = (
-    productos: Product[]
-): Record<string, Product[]> => {
-    if (!Array.isArray(productos)) {
-        console.error("productos no es un array:", productos);
-        return {}; // Retorna un objeto vacío en caso de que no sea un array
-    }
-
-    return productos.reduce((acc, producto) => {
-        acc[producto.categoria] = acc[producto.categoria] || [];
-        acc[producto.categoria].push(producto);
-        return acc;
-    }, {} as Record<string, Product[]>);
-};
-
-const capitalize = (word: string) => {
-    return String(word).charAt(0).toUpperCase() + String(word).slice(1);
-};
+import { agruparPorCategoria, capitalize } from "../helpers/functions";
+import { SearchForm } from "../components/SearchForm";
 
 const Home: React.FC = () => {
     const location = useLocation();
@@ -54,6 +37,7 @@ const Home: React.FC = () => {
 
     return (
         <div className="container mt-4">
+            <SearchForm />
             <h2 className="mb-3 text-center">Lista de Productos 🍔</h2>
             <div className="table-responsive">
                 {Object.entries(agruparPorCategoria(fetchedProducts)).map(
