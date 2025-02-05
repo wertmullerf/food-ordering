@@ -1,14 +1,14 @@
 import { Document } from "mongoose";
-import { Categorias } from "../enums/Categorias";
+import { Categorias } from "../enums/categorias";
 import { IIngrediente } from "./IIngrediente";
 
 export interface IProducto extends Document {
-    nombre: string;
-    precio: number;
-    stock: number;
-    costo?: number;
-    imageUrl: string;
-    descripcion: string;
-    categoria: Categorias;
-    ingredientes: IIngrediente["_id"][];
+  nombre: string;
+  precio: number;
+  stock: number;
+  costo?: number;
+  imageUrl: string;
+  descripcion: string;
+  categoria: Categorias;
+  ingredientes: [{ id: IIngrediente["_id"]; cantidad: number }];
 }

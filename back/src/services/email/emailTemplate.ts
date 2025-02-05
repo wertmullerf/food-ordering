@@ -96,11 +96,7 @@ const generarHtmlExitoso = (
                         (producto) => `
                     <tr>
                         <td>${producto.nombre}</td>
-                        <td>${producto.cantidad}</td>
-                        <td>$${producto.precio_unitario.toFixed(2)}</td>
-                        <td>$${(
-                          producto.cantidad * producto.precio_unitario
-                        ).toFixed(2)}</td>
+                        <td>$${producto.precio.toFixed(2)}</td>
                     </tr>
                     `
                       )

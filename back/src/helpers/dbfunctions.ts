@@ -1,6 +1,8 @@
 import { obtenerInfoRedis, saveResult } from "./redisfunction";
 import { Response } from "express";
 import { Model } from "mongoose";
+import Ingrediente from "../models/Ingrediente";
+import { IIngrediente } from "../interfaces/IIngrediente";
 
 export const obtenerRecursoPorId = async <T extends Document>(
   modelo: Model<T & Document>, // Modelo genérico con tipos extendidos
@@ -28,5 +30,18 @@ export const obtenerRecursoPorId = async <T extends Document>(
     return res
       .status(500)
       .json({ message: `Error al obtener ${modelo.modelName}` });
+  }
+};
+
+export const obtenerIngredientesExtras = async (
+  extraIds: string[]
+): Promise<IIngrediente[]> => {
+  if (extraIds.length === 0) return [];
+
+  try {
+    return await Ingrediente.find({ _id: { $in: extraIds } }).lean(); // Usar lean() para mejorar rendimiento si solo lees los datos
+  } catch (error) {
+    console.error("Error obteniendo ingredientes extras:", error);
+    return [];
   }
 };

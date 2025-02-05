@@ -10,6 +10,7 @@ import {
   crearPayer,
   crearListaItems,
   generarExternalReference,
+  igualarPrecio,
 } from "../helpers/paymentfunctions";
 import { crearDireccion } from "../services/address.service";
 
@@ -28,7 +29,7 @@ export const crearOrden = async (req: Request, res: Response) => {
       return;
     }
 
-    const items = crearListaItems(productos);
+    const items = await crearListaItems(productos);
 
     // Configuración del comprador (Payer)
     const payer: PayerRequest = crearPayer(payerData);
@@ -68,6 +69,7 @@ export const crearOrden = async (req: Request, res: Response) => {
         const direccion: string = await crearDireccion(payerData["address"]);
 
         // Crear el pedido con el paymentID y el usuario
+        igualarPrecio(items, productos);
         await crearPedido(productos, usuario, direccion, pago_id);
 
         // Responder con la URL de pago generada

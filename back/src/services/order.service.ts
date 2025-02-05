@@ -10,8 +10,7 @@ export const crearPedido = async (
   pago_id?: String
 ) => {
   const total = productos.reduce(
-    (acc: number, producto: IPedidoProducto) =>
-      acc + producto.precio_unitario * producto.cantidad,
+    (acc: number, producto: IPedidoProducto) => acc + producto.precio,
     0
   );
 
@@ -20,12 +19,13 @@ export const crearPedido = async (
     direccion_id: direccion,
     estatus: PedidoEstatus.Pendiente,
     productos,
-    total, // El total calculado
+    total,
+    // El total calculado
     ...(pago_id && { pago_id }), // Agregar pago_id si está disponible
   });
-
+  console.log(JSON.stringify(nuevoPedido));
   // Guardar el pedido en la base de datos
   await nuevoPedido.save();
-
+  console.log("llega");
   return nuevoPedido;
 };

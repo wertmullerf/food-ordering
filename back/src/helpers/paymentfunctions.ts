@@ -9,6 +9,8 @@ import { v4 as uuidv4 } from "uuid";
 import { EmailService, enviarCorreoExitoso } from "../services/email/index";
 import { IUsuario } from "../interfaces/IUser";
 import { ACCESS_TOKEN } from "../config";
+import { obtenerIngredientesExtras } from "./dbfunctions";
+import { IIngrediente } from "../interfaces/IIngrediente";
 /*---------------NO TOCAR (TIENE HORAS ENCIMA) -------------------*/
 
 export const exitoso = async (id: String) => {
@@ -89,18 +91,18 @@ export const evaluarEstatus = async (data: IMercadoPagoResponse) => {
         const dataPedidoProducto = await buscarProductosPorIdPago(
           data.external_reference
         );
+
         const htmlBody = enviarCorreoExitoso(
           // data.payer.first_name,
           dataUsuario?.nombre || "",
           data.external_reference,
           dataPedidoProducto!
         );
-
         const emailService = new EmailService();
         emailService.sendEmail({
-          to: dataUsuario?.email || data.payer.email,
+          to: dataUsuario?.email || "augustocastellano06@gmail.com", //data.payer.email,
           subject: `Gracias Por Tu Compra`,
-          copiaOculta: ["fwertmuller@gmail.com"],
+          copiaOculta: "fwertmuller@gmail.com",
           htmlBody: htmlBody,
         });
       }
@@ -124,7 +126,6 @@ export const webhook = async (req: Request, res: Response) => {
   const payment = req.query;
   const paymentID = payment["data.id"];
   //const paymentID = payment.payment_id;
-  console.log(paymentID);
   try {
     const response = await fetch(
       `https://api.mercadopago.com/v1/payments/${paymentID}`,
@@ -159,15 +160,60 @@ export const crearPayer = (payerData: any) => {
   };
 };
 
-export const crearListaItems = (productos: IPedidoProducto[]) => {
-  return productos.map((producto) => ({
-    id: producto._id as string,
-    title: producto.nombre as string,
-    quantity: producto.cantidad,
-    unit_price: producto.precio_unitario,
-  }));
-};
-
 export const generarExternalReference = () => {
   return uuidv4();
+};
+
+export const crearListaItems = async (productos: IPedidoProducto[]) => {
+  try {
+    const extraIds = new Set<string>();
+    productos.forEach((producto) => {
+      producto.personalizaciones.extras.forEach((extra) => {
+        if (extra.id) {
+          extraIds.add(extra.id.toString());
+        }
+      });
+    });
+
+    const ingredientes = await obtenerIngredientesExtras([...extraIds]);
+
+    if (!ingredientes || ingredientes.length === 0) {
+      console.warn(
+        "No se encontraron ingredientes extras en la base de datos."
+      );
+    }
+
+    const ingredientesMap = new Map<string, IIngrediente>();
+    ingredientes.forEach((ingrediente) => {
+      ingredientesMap.set(ingrediente._id?.toString() ?? "", ingrediente);
+    });
+
+    return productos.map((producto) => {
+      const precioExtras = producto.personalizaciones.extras.reduce(
+        (acc, extra) => {
+          const ingrediente = ingredientesMap.get(extra.id?.toString() ?? "");
+          return ingrediente
+            ? acc + (ingrediente.precioExtra ?? 0) * extra.cantidad
+            : acc;
+        },
+        0
+      );
+
+      return {
+        id: producto.producto_id as string,
+        quantity: 1,
+        title: producto.nombre as string,
+        unit_price: producto.precio + precioExtras,
+      };
+    });
+  } catch (error) {
+    console.error("Error al generar la lista de productos:", error);
+    throw new Error("No se pudo generar la lista de productos.");
+  }
+};
+
+export const igualarPrecio = (items: any, productos: IPedidoProducto[]) => {
+  for (let i = 0; i < items.length; i++) {
+    productos[i].precio = items[i].unit_price;
+  }
 };

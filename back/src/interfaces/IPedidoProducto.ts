@@ -3,9 +3,16 @@ import { IProducto } from "./IProducto";
 import { IIngrediente } from "./IIngrediente";
 
 export interface IPedidoProducto extends Document {
-    producto_id: IProducto["_id"];
-    nombre: String;
-    cantidad: number;
-    precio_unitario: number;
-    ingredientes: IIngrediente["_id"][];
+  producto_id: IProducto["_id"];
+  nombre: String;
+  precio: number;
+  personalizaciones: {
+    extras: [
+      {
+        id: IIngrediente["_id"];
+        cantidad: number;
+      }
+    ];
+    removidos: IIngrediente["_id"][];
+  };
 }
