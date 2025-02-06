@@ -1,4 +1,3 @@
-// context/CartContext.tsx
 import React, {
     createContext,
     useContext,
@@ -11,7 +10,7 @@ import { CartItem } from "../types/IProducto";
 
 interface CartContextType {
     carrito: CartItem[];
-    agregarAlCarrito: (item: Omit<CartItem, "cantidad">) => void;
+    agregarAlCarrito: (item: CartItem) => void; // Antes: Omit<CartItem, "cantidad">
     eliminarDelCarrito: (id: string) => void;
     actualizarCantidad: (id: string, cantidad: number) => void;
     totalCarrito: number;
