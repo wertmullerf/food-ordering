@@ -12,14 +12,15 @@ export const obtenerProductos = async (req: Request, res: Response) => {
     try {
         const reply = await obtenerInfoRedis(res, "product");
         if (reply) {
-            res.json(reply);
+            res.json(reply.productos ?? []); // ✅ Devuelve solo el array de productos
             return;
         }
         const productos = await Producto.find().lean();
-        await saveResult(productos, "product");
-        res.json({ productos: productos });
+        await saveResult({ productos }, "product"); // ✅ Guarda en Redis con estructura correcta
+        res.json(productos); // ✅ Ahora devuelve directamente el array
     } catch (error) {
         console.log(error);
+        res.status(500).json({ error: "Error en el servidor" });
     }
 };
 

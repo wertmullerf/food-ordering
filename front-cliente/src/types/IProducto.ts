@@ -1,27 +1,35 @@
-// types/product.ts
-export interface CartItem {
-    _id: string;
-    nombre: string;
-    precio: number;
-    stock: number;
-    categoria: string;
-    descripcion: string;
-    costo?: number;
-    imageUrl: string;
-    cantidad: number; // 📌 Asegurarnos de que `cantidad` esté aquí
+export interface CartItem extends IProducto {
+    cantidad: number;
     personalizaciones?: {
-        extras: { id: string; cantidad: number }[];
+        extras: ExtraSeleccionado[];
         removidos: string[];
     };
+    costo?: number;
+}
+export interface Ingrediente {
+    _id: string;
+    nombre: string;
+    precioExtra?: number;
+    removible: boolean;
 }
 
-export interface Product {
+export interface IngredienteConCantidad {
+    id: string;
+    cantidad: number;
+}
+
+export interface ExtraSeleccionado {
+    id: string;
+    cantidad: number;
+}
+
+export interface IProducto {
     _id: string;
     nombre: string;
     precio: number;
-    costo: number;
     stock: number;
     imageUrl: string;
     descripcion: string;
     categoria: string;
+    ingredientes?: IngredienteConCantidad[]; // ✅ Ahora es opcional
 }

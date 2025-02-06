@@ -1,8 +1,8 @@
-import { Product } from "../types/IProducto";
+import { IProducto } from "../types/IProducto";
 import "./ProductCard.css";
 import { useNavigate } from "react-router-dom";
 interface ProductCardProps {
-    producto: Product;
+    producto: IProducto;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {

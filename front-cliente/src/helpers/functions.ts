@@ -1,8 +1,8 @@
-import { Product } from "../types/IProducto";
+import { IProducto } from "../types/IProducto";
 
 export const agruparPorCategoria = (
-    productos: Product[]
-): Record<string, Product[]> => {
+    productos: IProducto[]
+): Record<string, IProducto[]> => {
     if (!Array.isArray(productos)) {
         console.error("productos no es un array:", productos);
         return {}; // Retorna un objeto vacío en caso de que no sea un array
@@ -12,7 +12,7 @@ export const agruparPorCategoria = (
         acc[producto.categoria] = acc[producto.categoria] || [];
         acc[producto.categoria].push(producto);
         return acc;
-    }, {} as Record<string, Product[]>);
+    }, {} as Record<string, IProducto[]>);
 };
 
 export const capitalize = (word: string) => {

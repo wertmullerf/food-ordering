@@ -5,19 +5,13 @@ import React, {
     useState,
     ReactNode,
 } from "react";
-
-interface Ingrediente {
-    _id: string;
-    nombre: string;
-    precioExtra?: number;
-    removible: boolean;
-}
+import { Ingrediente } from "../types/IProducto";
+import { getIngredientes, getExtras } from "../services/ingredientService";
 
 interface IngredientesContextType {
     ingredientes: Ingrediente[];
     extras: Ingrediente[];
     cargando: boolean;
-    recargarIngredientes: () => void;
 }
 
 const IngredientesContext = createContext<IngredientesContextType | undefined>(
@@ -40,53 +34,38 @@ export const IngredientesProvider: React.FC<{ children: ReactNode }> = ({
     const [ingredientes, setIngredientes] = useState<Ingrediente[]>([]);
     const [extras, setExtras] = useState<Ingrediente[]>([]);
     const [cargando, setCargando] = useState(true);
-
     const fetchIngredientes = async () => {
-        setCargando(true);
         try {
-            const resIngredientes = await fetch(
+            const response = await fetch(
                 "http://localhost:3000/api/ingredient"
             );
-            const resExtras = await fetch(
-                "http://localhost:3000/api/ingredient/extras"
-            );
-            // Validar si las respuestas son JSON antes de parsearlas
-            const isJson = (res: Response) =>
-                res.headers.get("content-type")?.includes("application/json");
+            if (!response.ok)
+                throw new Error("Error en la API de ingredientes");
 
-            if (!resIngredientes.ok || !resExtras.ok) {
-                throw new Error(
-                    `Error en la API: ${resIngredientes.status} - ${resExtras.status}`
+            const data = await response.json();
+
+            if (!Array.isArray(data)) {
+                console.error(
+                    "La API no devolvió un array de ingredientes:",
+                    data
                 );
+                setIngredientes([]); // ✅ Si no es un array, usar []
+                return;
             }
 
-            if (!isJson(resIngredientes) || !isJson(resExtras)) {
-                throw new Error("La API no devolvió JSON válido");
-            }
-
-            const dataIngredientes = await resIngredientes.json();
-            const dataExtras = await resExtras.json();
-
-            setIngredientes(dataIngredientes);
-            setExtras(dataExtras);
+            setIngredientes(data);
         } catch (error) {
             console.error("Error al cargar ingredientes:", error);
+            setIngredientes([]); // ✅ Si hay error, usar []
         }
-        setCargando(false);
     };
-
     useEffect(() => {
         fetchIngredientes();
     }, []);
 
     return (
         <IngredientesContext.Provider
-            value={{
-                ingredientes,
-                extras,
-                cargando,
-                recargarIngredientes: fetchIngredientes,
-            }}
+            value={{ ingredientes, extras, cargando }}
         >
             {children}
         </IngredientesContext.Provider>
