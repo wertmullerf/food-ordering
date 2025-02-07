@@ -13,6 +13,7 @@ import {
   igualarPrecio,
 } from "../helpers/paymentfunctions";
 import { crearDireccion } from "../services/address.service";
+import { verificarStock } from "../helpers/dbfunctions";
 
 const client = new MercadoPagoConfig({
   accessToken: ACCESS_TOKEN,
@@ -28,7 +29,14 @@ export const crearOrden = async (req: Request, res: Response) => {
       res.status(400).json({ message: "Faltan datos requeridos" });
       return;
     }
-
+    if (await verificarStock(productos)) {
+      res
+        .status(500)
+        .json({
+          messaje: "No hay stock de uno de los productos seleccionados",
+        });
+      return;
+    }
     const items = await crearListaItems(productos);
 
     // Configuración del comprador (Payer)

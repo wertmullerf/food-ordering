@@ -3,6 +3,8 @@ import { Response } from "express";
 import { Model } from "mongoose";
 import Ingrediente from "../models/Ingrediente";
 import { IIngrediente } from "../interfaces/IIngrediente";
+import { IPedidoProducto } from "../interfaces/IPedidoProducto";
+import Producto from "../models/Producto";
 
 export const obtenerRecursoPorId = async <T extends Document>(
   modelo: Model<T & Document>, // Modelo genérico con tipos extendidos
@@ -44,4 +46,14 @@ export const obtenerIngredientesExtras = async (
     console.error("Error obteniendo ingredientes extras:", error);
     return [];
   }
+};
+
+export const verificarStock = async (
+  productos: IPedidoProducto[]
+): Promise<Boolean> => {
+  const ids = productos.map((producto) => producto.producto_id);
+  const idsUnicas = [...new Set(ids)];
+  const products = await Producto.find({ _id: { $in: idsUnicas } }).lean();
+  const stock = products.map((producto) => producto.stock);
+  return stock.some((valor) => valor == false);
 };
