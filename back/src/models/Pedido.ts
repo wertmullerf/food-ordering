@@ -26,7 +26,7 @@ const pedidoSchema: Schema = new Schema<IPedido>(
       {
         producto_id: { type: Schema.Types.ObjectId, ref: "Producto" },
         nombre: { type: String, required: true },
-        cantidad: { type: Number, required: true },
+        cantidad: { type: Number, required: true, default: 1 },
         precio: { type: Number, required: true },
         personalizaciones: {
           extras: [

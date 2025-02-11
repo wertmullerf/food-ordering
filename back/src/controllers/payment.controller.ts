@@ -13,6 +13,7 @@ import {
   igualarPrecio,
 } from "../helpers/paymentfunctions";
 import { crearDireccion } from "../services/address.service";
+import { agruparProductosIdenticos } from "../utils/orderUtils";
 
 const client = new MercadoPagoConfig({
   accessToken: ACCESS_TOKEN,
@@ -29,6 +30,9 @@ export const crearOrden = async (req: Request, res: Response) => {
       return;
     }
 
+    // Primero agrupamos los productos que son idénticos (mismo producto y personalizaciones)
+    const productosAgrupados = agruparProductosIdenticos(productos);
+
     const items = await crearListaItems(productos);
 
     // Configuración del comprador (Payer)
@@ -44,7 +48,7 @@ export const crearOrden = async (req: Request, res: Response) => {
           items,
           back_urls: {
             //success: `http://localhost:5173/pedido/${pago_id}`,
-            success: "https://www.google.com/"
+            success: "https://www.google.com/",
           },
           auto_return: "approved",
           expires: true, // Habilitar expiración
@@ -70,8 +74,8 @@ export const crearOrden = async (req: Request, res: Response) => {
         const direccion: string = await crearDireccion(payerData["address"]);
 
         // Crear el pedido con el paymentID y el usuario
-        igualarPrecio(items, productos);
-        await crearPedido(productos, usuario, direccion, pago_id);
+        igualarPrecio(items, productosAgrupados);
+        await crearPedido(productosAgrupados, usuario, direccion, pago_id);
 
         // Responder con la URL de pago generada
         res.json({ url: paymentUrl });
