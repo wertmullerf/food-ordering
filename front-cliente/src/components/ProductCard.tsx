@@ -1,57 +1,51 @@
+import React from 'react';
 import { IProducto } from "../types/IProducto";
 import "./ProductCard.css";
 import { useNavigate } from "react-router-dom";
+
 interface ProductCardProps {
     producto: IProducto;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
     const navigate = useNavigate();
-    return (
-        <tr
-            className="align-middle border-bottom pointer"
-            onClick={() => navigate(`/producto/${producto._id}`)}
-            style={{
-                cursor: "pointer",
-            }}
-        >
-            <td
-                className="text-center"
-                style={{ padding: "5px 10px", width: "90px" }}
-            >
-                <img
-                    className="img-fluid"
-                    // src={producto.imageUrl}
-                    src={producto.imageUrl}
-                    alt={producto.nombre}
-                    style={{
-                        width: "100px",
-                        height: "100px",
-                        objectFit: "cover",
-                    }}
-                />
-            </td>
-            <td>
-                <div>
-                    <p className="m-0 fw-bold">{producto.nombre}</p>
-                    <p className="m-0 text-muted w-50 ">
-                        {producto.descripcion}
-                    </p>
-                </div>
-            </td>
 
-            <td
+    return (
+        <div 
+            className="card h-100 hover-dark"
+            style={{ 
+                backgroundColor: 'var(--dark-surface)',
+                border: 'none',
+                cursor: 'pointer'
+            }}
+            onClick={() => navigate(`/producto/${producto._id}`)}
+        >
+            <img
+                src={producto.imageUrl}
+                className="card-img-top"
+                alt={producto.nombre}
                 style={{
-                    padding: "5px 10px",
-                    fontSize: "16px",
-                    textAlign: "right",
-                    width: "100px",
+                    height: '200px',
+                    objectFit: 'cover'
                 }}
-                className="fw-bold"
-            >
-                ${producto.precio.toFixed(2)}
-            </td>
-        </tr>
+            />
+            <div className="card-body d-flex flex-column p-3">
+                <h5 className="card-title text-white fw-bold mb-2">
+                    {producto.nombre}
+                </h5>
+                <p className="card-text text-secondary small mb-2" style={{ fontSize: '0.9rem' }}>
+                    {producto.descripcion}
+                </p>
+                <div className="mt-auto">
+                    <span 
+                        className="fs-4 fw-bold"
+                        style={{ color: 'var(--accent-color)' }}
+                    >
+                        ${producto.precio.toFixed(2)}
+                    </span>
+                </div>
+            </div>
+        </div>
     );
 };
 

@@ -43,7 +43,8 @@ export const crearOrden = async (req: Request, res: Response) => {
         body: {
           items,
           back_urls: {
-            success: "https://www.google.com.ar",
+            //success: `http://localhost:5173/pedido/${pago_id}`,
+            success: "https://www.google.com/"
           },
           auto_return: "approved",
           expires: true, // Habilitar expiración
@@ -51,12 +52,12 @@ export const crearOrden = async (req: Request, res: Response) => {
           expiration_date_to: new Date(
             Date.now() + 20 * 60 * 1000
           ).toISOString(), // 20 minutos después
-          notification_url: `${BASE_NGROK_URL}/api/payment/webhook`,
+          notification_url: `https://cyan-games-pick.loca.lt/api/payment/webhook`,
           external_reference: pago_id,
         },
 
         requestOptions: {
-          timeout: 5000,
+          timeout: 10000,
         },
       });
       console.log(`${BASE_NGROK_URL}/api/payment/webhook`);

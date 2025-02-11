@@ -167,29 +167,28 @@ export const generarExternalReference = () => {
 export const crearListaItems = async (productos: IPedidoProducto[]) => {
   try {
     const extraIds = new Set<string>();
+  
     productos.forEach((producto) => {
-      producto.personalizaciones.extras.forEach((extra) => {
+      producto.personalizaciones?.extras?.forEach((extra) => {
         if (extra.id) {
           extraIds.add(extra.id.toString());
         }
       });
     });
 
-    const ingredientes = await obtenerIngredientesExtras([...extraIds]);
-
-    if (!ingredientes || ingredientes.length === 0) {
-      console.warn(
-        "No se encontraron ingredientes extras en la base de datos."
-      );
+    console.log("extraIds", extraIds);
+    let ingredientes:IIngrediente[] = []
+    if (extraIds.size > 0) {
+      ingredientes = await obtenerIngredientesExtras([...extraIds]);
     }
-
     const ingredientesMap = new Map<string, IIngrediente>();
+
     ingredientes.forEach((ingrediente) => {
       ingredientesMap.set(ingrediente._id?.toString() ?? "", ingrediente);
     });
-
+    
     return productos.map((producto) => {
-      const precioExtras = producto.personalizaciones.extras.reduce(
+      const precioExtras = producto.personalizaciones.extras?.reduce(
         (acc, extra) => {
           const ingrediente = ingredientesMap.get(extra.id?.toString() ?? "");
           return ingrediente

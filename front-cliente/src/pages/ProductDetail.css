@@ -1,0 +1,14 @@
+.hover-shadow:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  
+  .extras-grid {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .extra-item {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+  }

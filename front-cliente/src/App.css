@@ -1,0 +1,54 @@
+:root {
+  --dark-bg: #1A1B1E;         /* Un poco más suave que negro puro */
+  --dark-surface: #222327;     /* Un gris muy oscuro con toque azulado */
+  --dark-surface-2: #2A2B30;   /* Un poco más claro para contraste */
+  --text-primary: #FFFFFF;
+  --text-secondary: #A1A1A6;
+  --accent-color: #FF4D4D;     /* Rojo vibrante */
+  --accent-hover: #FF6B6B;
+}
+
+body {
+  background-color: var(--dark-bg);
+  color: var(--text-primary);
+}
+
+.dark-theme {
+  background-color: var(--dark-surface);
+}
+
+.hover-dark:hover {
+  background-color: var(--dark-surface-2) !important;
+  transition: all 0.3s ease;
+}
+
+.table {
+  --bs-table-bg: var(--dark-bg);
+  --bs-table-color: var(--text-primary);
+  --bs-table-border-color: var(--dark-surface-2);
+}
+
+.table tbody {
+  background-color: var(--dark-bg);
+}
+
+.table tr {
+  border-color: var(--dark-surface-2);
+}
+
+.product-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+@media (min-width: 768px) {
+    .container-fluid {
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+    }
+}

@@ -14,9 +14,9 @@ const ProductTable: React.FC<ProductTableProps> = ({
 }) => {
     return (
         <div>
-            <h3 className="mt-4">{capitalize(categoria)}</h3>
-            <table className="table table-striped">
-                <tbody>
+            <h3 className="mt-4 text-white">{capitalize(categoria)}</h3>
+            <table className="table">
+                <tbody className="border-dark">
                     {productos.map((producto) => (
                         <ProductCard key={producto._id} producto={producto} />
                     ))}

@@ -43,12 +43,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
     const agregarAlCarrito = useCallback((item: Omit<CartItem, "cantidad">) => {
         setCarrito((prev) => {
-            const existing = prev.find((p) => p._id === item._id);
-            if (existing) {
-                return prev.map((p) =>
-                    p._id === item._id ? { ...p, cantidad: p.cantidad + 1 } : p
-                );
-            }
             return [...prev, { ...item, cantidad: 1 }];
         });
     }, []);

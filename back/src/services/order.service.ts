@@ -26,6 +26,5 @@ export const crearPedido = async (
   console.log(JSON.stringify(nuevoPedido));
   // Guardar el pedido en la base de datos
   await nuevoPedido.save();
-  console.log("llega");
   return nuevoPedido;
 };

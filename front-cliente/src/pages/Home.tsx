@@ -1,45 +1,78 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "../services/productService";
-import ProductTable from "../components/ProductTable";
-import { agruparPorCategoria, capitalize } from "../helpers/functions";
-import "./Home.css";
+import { agruparPorCategoria } from "../helpers/functions";
 import { SearchForm } from "../components/SearchForm";
+import ProductCard from "../components/ProductCard";
+import BurgerLoader from "../components/BurgerLoader";
 
 const Home: React.FC = () => {
-    // Fetch de productos con react-query
+    const [isLoadingArtificial, setIsLoadingArtificial] = useState(() => {
+        return !localStorage.getItem('hasVisitedBefore');
+    });
+
     const {
         data: fetchedProducts = [],
-        isLoading,
+        isLoading: isLoadingQuery,
         error,
-        refetch,
     } = useQuery({
         queryKey: ["products"],
         queryFn: getProducts,
-        staleTime: 1000 * 60 * 5, // Cache de 5 minutos
-        refetchOnMount: false, // 🚀 **No hacer refetch al montar (evita doble carga)**
-        refetchOnWindowFocus: false, // Evita recarga automática al cambiar de ventana
-        retry: 3, // **🚀 Intenta 3 veces si hay error en la API**
+        staleTime: 1000 * 60 * 5,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        retry: 3,
     });
 
-    if (isLoading) return <p>Cargando productos...</p>;
-    if (error) return <p>Error al cargar productos. Intente nuevamente.</p>;
+    useEffect(() => {
+        if (!isLoadingQuery && isLoadingArtificial) {
+            setTimeout(() => {
+                setIsLoadingArtificial(false);
+                localStorage.setItem('hasVisitedBefore', 'true');
+            }, 1000);
+        }
+    }, [isLoadingQuery, isLoadingArtificial]);
+
+    if (isLoadingQuery || isLoadingArtificial) return (
+        <div className="d-flex justify-content-center align-items-center min-vh-100">
+            <BurgerLoader />
+        </div>
+    );
+
+    
+    if (error) return (
+        <div className="alert alert-danger text-center m-4" role="alert">
+            Error al cargar productos. Intente nuevamente.
+        </div>
+    );
 
     return (
-        <div className="container mt-4">
-            <SearchForm />
-            <h2 className="mb-3 text-center">Lista de Productos 🍔</h2>
+        <div className="container-fluid py-5">
+            <div className="row justify-content-center mb-5">
+                <div className="col-12 col-md-8 col-lg-6">
+                    <SearchForm />
+                </div>
+            </div>
 
-            <div className="table-responsive">
-                {Object.entries(agruparPorCategoria(fetchedProducts)).map(
-                    ([categoria, items]) => (
-                        <ProductTable
-                            key={categoria}
-                            categoria={categoria}
-                            productos={items}
-                        />
-                    )
-                )}
+            <div className="row justify-content-center">
+                <div className="col-12 col-xl-10">
+                    {Object.entries(agruparPorCategoria(fetchedProducts)).map(
+                        ([categoria, productos]) => (
+                            <div key={categoria} className="mb-5">
+                                <h2 className="text-white mb-4">
+                                    {categoria.toUpperCase()}
+                                </h2>
+                                <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                                    {productos.map((producto) => (
+                                        <div key={producto._id} className="col">
+                                            <ProductCard producto={producto} />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )
+                    )}
+                </div>
             </div>
         </div>
     );
