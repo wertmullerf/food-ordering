@@ -6,7 +6,7 @@ import { PersonalDataForm } from "../components/checkout/PersonalDataForm";
 import { AddressForm } from "../components/checkout/AddressForm";
 
 const CheckoutPage: React.FC = () => {
-  const { carrito } = useCart();
+  const { carrito, totalCarrito } = useCart();
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -14,12 +14,6 @@ const CheckoutPage: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<CheckoutForm>();
-
-  // Calcula total a partir del carrito bien agregado
-  const totalCarrito = carrito.reduce(
-    (acc, item) => acc + item.precio * item.cantidad,
-    0
-  );
 
   const onSubmit = async (data: CheckoutForm) => {
     setIsLoading(true);
@@ -43,12 +37,11 @@ const CheckoutPage: React.FC = () => {
             number: data.identification.number,
           },
         },
-        // Enviamos el carrito tal como está (ya con las cantidades correctas)
         items: carrito.map((item) => ({
           producto_id: item._id,
           nombre: item.nombre,
           cantidad: item.cantidad,
-          precio: item.precio, // precio unitario
+          precio: item.precio,
           personalizaciones: {
             extras: item.personalizaciones?.extras || [],
             removidos: item.personalizaciones?.removidos || [],

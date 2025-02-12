@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { CartItem } from "../types/IProducto";
 import { arePersonalizacionesEqual } from "../utils/cartUtils";
+import { useIngredientes } from "./IngredientesContext";
 
 // Función auxiliar que compara el _id y las personalizaciones (en este caso, usando JSON.stringify para mayor robustez)
 const isSameCartItem = (a: CartItem, b: CartItem): boolean => {
@@ -48,6 +49,7 @@ export const useCart = (): CartContextType => {
 };
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
+  const { ingredientesExtras } = useIngredientes();
   const [carrito, setCarrito] = useState<CartItem[]>(() => {
     const savedCart = localStorage.getItem("cart");
     return savedCart ? JSON.parse(savedCart) : [];
@@ -57,17 +59,35 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     localStorage.setItem("cart", JSON.stringify(carrito));
   }, [carrito]);
 
+  const calcularPrecioConExtras = (item: CartItem) => {
+    let precioTotal = item.precio; // Empezamos con el precio base
+
+    if (item.personalizaciones?.extras) {
+      const precioExtras = item.personalizaciones.extras.reduce(
+        (acc, extra) => {
+          const ingrediente = ingredientesExtras.find(
+            (ing) => ing._id === extra.id
+          );
+          return acc + (ingrediente?.precioExtra || 0);
+        },
+        0
+      );
+      precioTotal += precioExtras;
+    }
+
+    return precioTotal;
+  };
+
   const agregarAlCarrito = (item: CartItem) => {
+    // Ya no modificamos el precio base al agregar al carrito
     setCarrito((prev) => {
       const index = prev.findIndex((p) => isSameCartItem(p, item));
       if (index !== -1) {
-        // Si ya existe, incrementamos su cantidad según lo recibido en item.cantidad.
         const updated = [...prev];
         updated[index].cantidad += item.cantidad;
         return updated;
       } else {
-        // Producto distinto: se agrega al carrito respetando la cantidad enviada.
-        return [...prev, item];
+        return [...prev, item]; // Mantenemos el precio base original
       }
     });
   };
@@ -134,10 +154,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     );
   };
 
-  const totalCarrito = carrito.reduce(
-    (total, item) => total + item.precio * item.cantidad,
-    0
-  );
+  const totalCarrito = carrito.reduce((total, item) => {
+    const precioConExtras = calcularPrecioConExtras(item);
+    return total + precioConExtras * item.cantidad;
+  }, 0);
 
   const itemsEnCarrito = carrito.reduce(
     (total, item) => total + item.cantidad,

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { CartItem } from "../types/IProducto";
 import { QuantitySelector } from "../components/product/QuantitySelector";
+import { useIngredientes } from "../context/IngredientesContext";
 
 const CartPage: React.FC = () => {
   const {
@@ -13,6 +14,7 @@ const CartPage: React.FC = () => {
     totalCarrito,
     itemsEnCarrito,
   } = useCart();
+  const { ingredientesExtras } = useIngredientes();
 
   const handleActualizarCantidad = (
     id: string,
@@ -43,6 +45,33 @@ const CartPage: React.FC = () => {
     actualizarCantidad(id, cantidad, personalizaciones);
   };
 
+  const calcularPrecioConExtras = (item: CartItem) => {
+    let precioTotal = item.precio;
+
+    if (item.personalizaciones?.extras) {
+      const precioExtras = item.personalizaciones.extras.reduce(
+        (acc, extra) => {
+          const ingrediente = ingredientesExtras.find(
+            (ing) => ing._id === extra.id
+          );
+          return acc + (ingrediente?.precioExtra || 0) * extra.cantidad;
+        },
+        0
+      );
+      precioTotal += precioExtras;
+    }
+
+    return precioTotal;
+  };
+
+  // Función auxiliar para obtener el nombre del ingrediente y su precio
+  const getIngredienteInfo = (id: string) => {
+    const ingrediente = ingredientesExtras.find((ing) => ing._id === id);
+    return {
+      nombre: ingrediente?.nombre || "Ingrediente no encontrado",
+      precioExtra: ingrediente?.precioExtra || 0,
+    };
+  };
   return (
     <div
       className="min-vh-100 py-4"
@@ -112,6 +141,40 @@ const CartPage: React.FC = () => {
                         >
                           {item.descripcion}
                         </p>
+                        {item.personalizaciones &&
+                          Array.isArray(item.personalizaciones.extras) &&
+                          item.personalizaciones.extras.length > 0 && (
+                            <p
+                              className="text-secondary mb-3"
+                              style={{ fontSize: "0.95rem" }}
+                            >
+                              Extras:{" "}
+                              {item.personalizaciones.extras.map(
+                                (extra, index) => {
+                                  const ingrediente = ingredientesExtras.find(
+                                    (ing) => ing._id === extra.id
+                                  );
+                                  return (
+                                    <span
+                                      key={`${item._id}-${extra.id}-${index}`}
+                                    >
+                                      {ingrediente?.nombre ||
+                                        "Extra no encontrado"}
+                                      {extra.cantidad > 1
+                                        ? ` (x${extra.cantidad})`
+                                        : ""}
+                                      {index <
+                                      (item.personalizaciones?.extras?.length ||
+                                        0) -
+                                        1
+                                        ? ", "
+                                        : ""}
+                                    </span>
+                                  );
+                                }
+                              )}
+                            </p>
+                          )}
 
                         <div className="mt-auto">
                           <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
@@ -137,10 +200,13 @@ const CartPage: React.FC = () => {
                                 className="mb-1 fw-bold"
                                 style={{ color: "var(--accent-color)" }}
                               >
-                                ${(item.precio * item.cantidad).toFixed(2)}
+                                $
+                                {(
+                                  calcularPrecioConExtras(item) * item.cantidad
+                                ).toFixed(2)}
                               </h5>
                               <small className="text-secondary">
-                                ${item.precio.toFixed(2)} c/u
+                                ${calcularPrecioConExtras(item).toFixed(2)} c/u
                               </small>
                             </div>
                           </div>

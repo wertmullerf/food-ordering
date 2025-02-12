@@ -64,11 +64,9 @@ const ProductDetail: React.FC = () => {
 
   const handleAddToCart = () => {
     if (product) {
-      const precioTotal = calcularPrecioTotal();
       agregarAlCarrito({
         ...product,
         cantidad,
-        precio: precioTotal,
         personalizaciones: {
           extras: extrasSeleccionados.map((extra) => ({
             id: extra.id,
@@ -80,37 +78,51 @@ const ProductDetail: React.FC = () => {
     }
   };
 
-  if (isLoading) return (
-    <div className="d-flex justify-content-center align-items-center min-vh-100">
-      <BurgerLoader />
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <BurgerLoader />
+      </div>
+    );
 
-  if (!product) return <p className="text-center mt-5">Producto no encontrado</p>;
+  if (!product)
+    return <p className="text-center mt-5">Producto no encontrado</p>;
 
   return (
-    <div className="min-vh-100 pt-4" style={{ backgroundColor: 'var(--dark-bg)' }}>
+    <div
+      className="min-vh-100 pt-4"
+      style={{ backgroundColor: "var(--dark-bg)" }}
+    >
       <div className="container">
         <div className="row g-4">
           <div className="col-md-6">
             <ProductImage imageUrl={product.imageUrl} nombre={product.nombre} />
           </div>
-          
+
           <div className="col-md-6">
-            <div className="p-4 rounded-4" style={{ backgroundColor: 'var(--dark-surface)' }}>
-              <h1 className="display-5 fw-bold text-white mb-3">{product.nombre}</h1>
+            <div
+              className="p-4 rounded-4"
+              style={{ backgroundColor: "var(--dark-surface)" }}
+            >
+              <h1 className="display-5 fw-bold text-white mb-3">
+                {product.nombre}
+              </h1>
               <p className="lead text-secondary mb-4">{product.descripcion}</p>
 
               <div className="mb-4">
-                <h4 className="fs-2 fw-bold" style={{ color: 'var(--accent-color)' }}>
+                <h4
+                  className="fs-2 fw-bold"
+                  style={{ color: "var(--accent-color)" }}
+                >
                   ${product.precio.toFixed(2)}
                 </h4>
               </div>
 
               {ingredientesExtras.length > 0 && (
-                <ProductExtras 
-                  extras={ingredientesExtras.filter(i => i.precioExtra !== undefined)
-                    .map(i => ({ ...i, precioExtra: i.precioExtra! }))}
+                <ProductExtras
+                  extras={ingredientesExtras
+                    .filter((i) => i.precioExtra !== undefined)
+                    .map((i) => ({ ...i, precioExtra: i.precioExtra! }))}
                   onExtraChange={handleExtrasChange}
                 />
               )}
@@ -118,21 +130,23 @@ const ProductDetail: React.FC = () => {
               <div className="d-flex align-items-center gap-4 mb-4">
                 <QuantitySelector
                   cantidad={cantidad}
-                  onDecrease={() => setCantidad(prev => Math.max(1, prev - 1))}
-                  onIncrease={() => setCantidad(prev => prev + 1)}
+                  onDecrease={() =>
+                    setCantidad((prev) => Math.max(1, prev - 1))
+                  }
+                  onIncrease={() => setCantidad((prev) => prev + 1)}
                 />
-                <h4 className="mb-0" style={{ color: 'var(--accent-color)' }}>
+                <h4 className="mb-0" style={{ color: "var(--accent-color)" }}>
                   Total: ${(calcularPrecioTotal() * cantidad).toFixed(2)}
                 </h4>
               </div>
 
               <button
                 className="btn btn-lg w-100 py-3"
-                style={{ 
-                  backgroundColor: 'var(--accent-color)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '50px'
+                style={{
+                  backgroundColor: "var(--accent-color)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "50px",
                 }}
                 onClick={handleAddToCart}
               >
