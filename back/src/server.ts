@@ -20,14 +20,16 @@ import path from "path";
 const PORT = process.env.PORT;
 const app = express();
 connectDB();
-app.use(cors({
-    origin: 'http://localhost:5173', // O el puerto que uses para tu frontend
-    credentials: true
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173", // O el puerto que uses para tu frontend
+    credentials: true,
+  })
+);
 
 // Connecting to redis
 export const client = createClient({
-    url: "redis://127.0.0.1:6379",
+  url: "redis://127.0.0.1:6379",
 });
 app.use(morgan("dev"));
 const server = http.createServer(app);
@@ -37,24 +39,24 @@ initializeSockets(io);
 
 app.use(express.static(path.join(__dirname, "../public")));
 
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 app.use((req, res, next) => {
-  if (req.path.includes('/webhook')) {
-    console.log('Webhook request received:', {
+  if (req.path.includes("/webhook")) {
+    console.log("Webhook request received:", {
       path: req.path,
       method: req.method,
       headers: req.headers,
       body: req.body,
-      query: req.query
+      query: req.query,
     });
   }
   next();
 });
 
 app.get("/", (req, res) => {
-    res.send("¡Servidor corriendo con TypeScript!");
+  res.send("¡Servidor corriendo con TypeScript!");
 });
 
 app.use("/api/user", userRouter);
@@ -65,9 +67,9 @@ app.use("/auth/login", authRouter);
 app.use("/api/ingredient", ingredienteRouter);
 
 const main = async () => {
-    await client.connect();
-    app.listen(PORT);
-    console.log(`Server listen on port ${PORT}`);
+  await client.connect();
+  app.listen(PORT);
+  console.log(`Server listen on port ${PORT}`);
 };
 
 main();

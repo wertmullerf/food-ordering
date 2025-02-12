@@ -10,7 +10,8 @@ export const crearPedido = async (
   pago_id?: String
 ) => {
   const total = productos.reduce(
-    (acc: number, producto: IPedidoProducto) => acc + producto.precio,
+    (acc: number, producto: IPedidoProducto) =>
+      acc + producto.precio * producto.cantidad,
     0
   );
 

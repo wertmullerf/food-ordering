@@ -4,7 +4,7 @@ import { MAILER_EMAIL, MAILER_SECRET_KEY, MAILER_SERVICE } from "../../config";
 interface SendMailOptions {
   to: string;
   subject: string;
-  copiaOculta: string;
+  //copiaOculta: string;
   htmlBody: string;
 }
 
@@ -18,12 +18,12 @@ export class EmailService {
   });
 
   async sendEmail(options: SendMailOptions): Promise<boolean> {
-    const { to, subject, copiaOculta, htmlBody } = options;
+    const { to, subject, htmlBody } = options;
     try {
       const sendInformation = await this.transporter.sendMail({
         to: to,
         subject: subject,
-        bcc: copiaOculta,
+        //bcc: copiaOculta,
         html: htmlBody,
       });
       console.log(sendInformation + " neneee");

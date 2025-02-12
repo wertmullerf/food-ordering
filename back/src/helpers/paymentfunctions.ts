@@ -100,9 +100,9 @@ export const evaluarEstatus = async (data: IMercadoPagoResponse) => {
         );
         const emailService = new EmailService();
         emailService.sendEmail({
-          to: dataUsuario?.email || "augustocastellano06@gmail.com", //data.payer.email,
+          to: dataUsuario?.email || "wertmullerf@gmail.com", //data.payer.email,
           subject: `Gracias Por Tu Compra`,
-          copiaOculta: "fwertmuller@gmail.com",
+          //copiaOculta: "fwertmuller@gmail.com",
           htmlBody: htmlBody,
         });
       }
@@ -123,29 +123,36 @@ export const evaluarEstatus = async (data: IMercadoPagoResponse) => {
 };
 
 export const webhook = async (req: Request, res: Response) => {
-  const payment = req.query;
-  const paymentID = payment["data.id"];
-  //const paymentID = payment.payment_id;
-  try {
-    const response = await fetch(
-      `https://api.mercadopago.com/v1/payments/${paymentID}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
-        },
-      }
-    );
+  // MercadoPago puede enviar la notificación de diferentes formas
+  const paymentId =
+    req.query["data.id"] || // IPN notification
+    req.body.data?.id || // Webhook notification
+    req.query.id || // Payment notification
+    req.body.id; // Direct payment data
 
-    if (response.ok) {
-      const data: IMercadoPagoResponse = await response.json();
-      //console.log("EXTERNAL REFERENCE \n", data.external_reference);
-      evaluarEstatus(data);
+  const type = req.query.type || req.body.type || "payment";
+
+  if (paymentId) {
+    try {
+      const response = await fetch(
+        `https://api.mercadopago.com/v1/payments/${paymentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        await evaluarEstatus(data);
+      }
+      res.sendStatus(200);
+    } catch (error) {
+      res.sendStatus(500);
     }
-    res.sendStatus(200);
-  } catch (error) {
-    console.log("ERROR", error);
-    res.sendStatus(500);
+  } else {
+    res.sendStatus(400);
   }
 };
 
@@ -167,7 +174,8 @@ export const generarExternalReference = () => {
 export const crearListaItems = async (productos: IPedidoProducto[]) => {
   try {
     const extraIds = new Set<string>();
-  
+
+    // Recolectamos todos los IDs de extras
     productos.forEach((producto) => {
       producto.personalizaciones?.extras?.forEach((extra) => {
         if (extra.id) {
@@ -176,31 +184,29 @@ export const crearListaItems = async (productos: IPedidoProducto[]) => {
       });
     });
 
-    console.log("extraIds", extraIds);
-    let ingredientes:IIngrediente[] = []
+    // Obtenemos los ingredientes extras
+    let ingredientes: IIngrediente[] = [];
     if (extraIds.size > 0) {
       ingredientes = await obtenerIngredientesExtras([...extraIds]);
     }
-    const ingredientesMap = new Map<string, IIngrediente>();
 
+    // Creamos un mapa para acceso rápido
+    const ingredientesMap = new Map<string, IIngrediente>();
     ingredientes.forEach((ingrediente) => {
       ingredientesMap.set(ingrediente._id?.toString() ?? "", ingrediente);
     });
-    
+
+    // Creamos los items para MercadoPago
     return productos.map((producto) => {
-      const precioExtras = producto.personalizaciones.extras?.reduce(
-        (acc, extra) => {
+      const precioExtras =
+        producto.personalizaciones.extras?.reduce((acc, extra) => {
           const ingrediente = ingredientesMap.get(extra.id?.toString() ?? "");
-          return ingrediente
-            ? acc + (ingrediente.precioExtra ?? 0) * extra.cantidad
-            : acc;
-        },
-        0
-      );
+          return acc + (ingrediente?.precioExtra ?? 0);
+        }, 0) ?? 0;
 
       return {
         id: producto.producto_id as string,
-        quantity: 1,
+        quantity: producto.cantidad, // Aquí estaba el error, no estábamos usando la cantidad
         title: producto.nombre as string,
         unit_price: producto.precio + precioExtras,
       };
