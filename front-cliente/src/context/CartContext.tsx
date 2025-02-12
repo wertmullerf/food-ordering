@@ -23,8 +23,12 @@ interface CartContextType {
   carrito: CartItem[];
   agregarAlCarrito: (item: CartItem) => void;
   eliminarProducto: (item: CartItem) => void;
-  eliminarDelCarrito: (id: string) => void;
-  actualizarCantidad: (id: string, cantidad: number) => void;
+  eliminarDelCarrito: (id: string, personalizaciones?: any) => void;
+  actualizarCantidad: (
+    id: string,
+    cantidad: number,
+    personalizaciones?: any
+  ) => void;
   totalCarrito: number;
   itemsEnCarrito: number;
 }
@@ -84,19 +88,48 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     });
   };
 
-  const eliminarDelCarrito = useCallback((id: string) => {
-    setCarrito((prev) => prev.filter((item) => item._id !== id));
-  }, []);
+  const eliminarDelCarrito = useCallback(
+    (id: string, personalizaciones?: any) => {
+      setCarrito((prev) =>
+        prev.filter(
+          (item) =>
+            !(
+              item._id === id &&
+              JSON.stringify(item.personalizaciones || {}) ===
+                JSON.stringify(personalizaciones || {})
+            )
+        )
+      );
+    },
+    []
+  );
 
-  const actualizarCantidad = (id: string, nuevaCantidad: number) => {
+  const actualizarCantidad = (
+    id: string,
+    nuevaCantidad: number,
+    personalizaciones?: any
+  ) => {
     if (nuevaCantidad < 1) {
-      eliminarDelCarrito(id);
+      setCarrito((prev) =>
+        prev.filter(
+          (item) =>
+            !(
+              item._id === id &&
+              JSON.stringify(item.personalizaciones || {}) ===
+                JSON.stringify(personalizaciones || {})
+            )
+        )
+      );
       return;
     }
 
     setCarrito((prevCarrito) =>
       prevCarrito.map((item) =>
-        item._id === id ? { ...item, cantidad: nuevaCantidad } : item
+        item._id === id &&
+        JSON.stringify(item.personalizaciones || {}) ===
+          JSON.stringify(personalizaciones || {})
+          ? { ...item, cantidad: nuevaCantidad }
+          : item
       )
     );
   };

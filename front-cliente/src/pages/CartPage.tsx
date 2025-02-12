@@ -14,13 +14,23 @@ const CartPage: React.FC = () => {
     itemsEnCarrito,
   } = useCart();
 
-  const handleActualizarCantidad = (id: string, cantidad: number) => {
-    const item = carrito.find((i) => i._id === id);
+  const handleActualizarCantidad = (
+    id: string,
+    cantidad: number,
+    personalizaciones?: any
+  ) => {
+    const item = carrito.find(
+      (i) =>
+        i._id === id &&
+        JSON.stringify(i.personalizaciones || {}) ===
+          JSON.stringify(personalizaciones || {})
+    );
+
     if (!item) return;
 
     // Si es una disminución de cantidad, permitirla siempre
     if (cantidad < item.cantidad) {
-      actualizarCantidad(id, cantidad);
+      actualizarCantidad(id, cantidad, personalizaciones);
       return;
     }
 
@@ -29,6 +39,8 @@ const CartPage: React.FC = () => {
       alert(`No hay suficiente stock disponible`);
       return;
     }
+
+    actualizarCantidad(id, cantidad, personalizaciones);
   };
 
   return (
@@ -108,11 +120,16 @@ const CartPage: React.FC = () => {
                               onDecrease={() =>
                                 handleActualizarCantidad(
                                   item._id,
-                                  Math.max(0, item.cantidad - 1)
+                                  Math.max(0, item.cantidad - 1),
+                                  item.personalizaciones
                                 )
                               }
                               onIncrease={() =>
-                                actualizarCantidad(item._id, item.cantidad + 1)
+                                handleActualizarCantidad(
+                                  item._id,
+                                  item.cantidad + 1,
+                                  item.personalizaciones
+                                )
                               }
                             />
                             <div className="text-end">
@@ -129,7 +146,12 @@ const CartPage: React.FC = () => {
                           </div>
 
                           <button
-                            onClick={() => eliminarDelCarrito(item._id)}
+                            onClick={() =>
+                              eliminarDelCarrito(
+                                item._id,
+                                item.personalizaciones
+                              )
+                            }
                             className="btn mt-3"
                             style={{
                               backgroundColor: "rgba(255, 59, 48, 0.1)",
