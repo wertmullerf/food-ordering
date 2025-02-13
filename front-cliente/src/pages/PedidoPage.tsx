@@ -66,62 +66,106 @@ const PedidoPage = () => {
 
   return (
     <div className="container py-5">
-      <div className="card shadow-sm">
-        <div className="card-header bg-dark text-white">
+      <div
+        className="card border-0 rounded-4 shadow-lg"
+        style={{ backgroundColor: "var(--dark-surface)" }}
+      >
+        {/* Header del Pedido */}
+        <div
+          className="card-header border-0 p-4 rounded-top-4"
+          style={{ backgroundColor: "var(--dark-surface-2)" }}
+        >
           <div className="d-flex justify-content-between align-items-center">
-            <h2 className="mb-0">Pedido #{pedido._id}</h2>
-            <span className={`badge ${getStatusBadgeClass(pedido.estatus)}`}>
+            <div>
+              <h4 className="text-white mb-1">Pedido</h4>
+              <p className="text-secondary mb-0" style={{ fontSize: "0.9rem" }}>
+                #{pedido.pago_id}
+              </p>
+            </div>
+            <span
+              className={`badge rounded-pill px-3 py-2 ${getStatusBadgeClass(
+                pedido.estatus
+              )}`}
+              style={{ fontSize: "0.85rem" }}
+            >
               {pedido.estatus.toUpperCase()}
             </span>
           </div>
         </div>
 
-        <div className="card-body">
-          <div className="row mb-4">
-            <div className="col-md-6">
-              <p className="mb-1">
-                <i className="bi bi-calendar-event me-2"></i>
-                <strong>Fecha:</strong>{" "}
-                {new Date(pedido.createdAt).toLocaleString()}
-              </p>
-              <p className="mb-1">
-                <i className="bi bi-currency-dollar me-2"></i>
-                <strong>Total:</strong> ${pedido.total.toFixed(2)}
-              </p>
+        <div className="card-body p-4">
+          {/* Info General */}
+          <div className="row g-4 mb-4">
+            <div className="col-md-12">
+              <div
+                className="p-3 rounded-3"
+                style={{ backgroundColor: "var(--dark-surface-2)" }}
+              >
+                <div className="d-flex align-items-center mb-2">
+                  <i className="bi bi-calendar3 me-2 text-secondary"></i>
+                  <p className="text-white mb-0">
+                    {new Date(pedido.createdAt).toLocaleString()}
+                  </p>
+                </div>
+                <div className="d-flex align-items-center">
+                  <i className="bi bi-credit-card me-2 text-secondary"></i>
+                  <p className="text-white mb-0">
+                    Total: ${pedido.total.toFixed(2)}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <h3 className="mb-3">Productos</h3>
-          <div className="list-group">
-            {pedido.productos.map((producto) => (
-              <div key={producto.producto_id} className="list-group-item">
+          {/* Lista de Productos */}
+          <h5 className="text-white mb-3">Detalle del Pedido</h5>
+          <div className="rounded-3 overflow-hidden">
+            {pedido.productos.map((producto, index) => (
+              <div
+                key={producto.producto_id}
+                className="p-3"
+                style={{
+                  backgroundColor:
+                    index % 2 === 0 ? "var(--dark-surface-2)" : "transparent",
+                }}
+              >
                 <div className="d-flex justify-content-between align-items-start">
                   <div>
-                    <h5 className="mb-1">{producto.nombre}</h5>
-                    <p className="mb-1 text-muted">
-                      Cantidad: {producto.cantidad} × $
-                      {producto.precio.toFixed(2)}
-                    </p>
+                    <h6 className="text-white mb-2">{producto.nombre}</h6>
+                    <div className="d-flex align-items-center mb-2">
+                      <span
+                        className="badge rounded-pill me-2"
+                        style={{ backgroundColor: "var(--accent-color)" }}
+                      >
+                        ×{producto.cantidad}
+                      </span>
+                      <span className="text-secondary">
+                        ${producto.precio.toFixed(2)} c/u
+                      </span>
+                    </div>
 
                     {producto.personalizaciones?.extras.length > 0 && (
                       <div className="mt-2">
-                        <small className="text-muted">Extras:</small>
-                        <ul className="list-unstyled ms-3 mb-0">
+                        <div className="d-flex flex-wrap gap-2">
                           {producto.personalizaciones.extras.map((extra) => (
-                            <li key={extra.id}>
-                              <small>
-                                • {getNombreIngrediente(extra.id)}
-                                {extra.cantidad > 1
-                                  ? ` (×${extra.cantidad})`
-                                  : ""}
-                              </small>
-                            </li>
+                            <span
+                              key={extra.id}
+                              className="badge rounded-pill px-2 py-1"
+                              style={{
+                                backgroundColor: "var(--dark-surface)",
+                                color: "var(--text-secondary)",
+                                fontSize: "0.8rem",
+                              }}
+                            >
+                              {getNombreIngrediente(extra.id)}
+                              {extra.cantidad > 1 ? ` ×${extra.cantidad}` : ""}
+                            </span>
                           ))}
-                        </ul>
+                        </div>
                       </div>
                     )}
                   </div>
-                  <span className="h5 mb-0">
+                  <span className="text-white fw-bold">
                     ${(producto.precio * producto.cantidad).toFixed(2)}
                   </span>
                 </div>
@@ -130,13 +174,19 @@ const PedidoPage = () => {
           </div>
         </div>
 
-        <div className="card-footer">
+        {/* Footer */}
+        <div className="card-footer border-0 p-4">
           <div className="d-flex justify-content-between align-items-center">
-            <Link to="/" className="btn btn-outline-dark">
+            <Link to="/" className="btn btn-outline-light rounded-pill px-4">
               <i className="bi bi-arrow-left me-2"></i>
-              Volver al inicio
+              Volver
             </Link>
-            <h4 className="mb-0">Total: ${pedido.total.toFixed(2)}</h4>
+            <div className="text-end">
+              <p className="text-secondary mb-1">Total del Pedido</p>
+              <h4 className="mb-0" style={{ color: "var(--accent-color)" }}>
+                ${pedido.total.toFixed(2)}
+              </h4>
+            </div>
           </div>
         </div>
       </div>
