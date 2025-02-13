@@ -2,10 +2,11 @@ import React from "react";
 import { IProducto } from "../types/IProducto";
 import "./ProductCard.css";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 
 const ProductCard: React.FC<{ producto: IProducto }> = ({ producto }) => {
   const navigate = useNavigate();
-
+  console.log(producto.imageUrl);
   return (
     <div
       className="card border-0 h-100 overflow-hidden"
@@ -18,7 +19,10 @@ const ProductCard: React.FC<{ producto: IProducto }> = ({ producto }) => {
     >
       <div className="position-relative">
         <img
-          src={producto.imageUrl}
+          src={producto.imageUrl.replace(
+            "http://localhost:3000",
+            API_BASE_URL.replace("/api", "")
+          )}
           className="card-img-top"
           alt={producto.nombre}
           style={{

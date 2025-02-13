@@ -1,4 +1,4 @@
-import { BASE_NGROK_URL } from "../../config";
+import { getTrackingUrl } from "../../config";
 import { IPedidoProducto } from "../../interfaces/IPedidoProducto";
 
 const generarHtmlExitoso = (
@@ -195,7 +195,9 @@ const generarHtmlExitoso = (
                 </table>
                 
                 <div class="button-container">
-                    <a href="http://localhost:5173/pedido/${codigo_de_seguimiento}" class="button">
+                    <a href="${getTrackingUrl(
+                      codigo_de_seguimiento.toString()
+                    )}" class="button">
                         Ver detalles del pedido →
                     </a>
                 </div>

@@ -4,7 +4,7 @@ import { IProducto } from "../interfaces/IProducto";
 import { obtenerRecursoPorId } from "../helpers/dbfunctions";
 import { obtenerInfoRedis, saveResult } from "../helpers/redisfunction";
 import upload from "../config/multerConfig"; // Importa la configuración de Multer
-import { BASE_LOCAL_URL } from "../config";
+import { BACKEND_URL } from "../config";
 import { verificarCamposProduct } from "../helpers/validatefunctions";
 import { Categorias } from "../enums/Categorias";
 
@@ -127,7 +127,7 @@ export const agregarProducto = async (
       costo: parseFloat(costo), // Convierte a número
       categoria,
       descripcion,
-      imageUrl: `${BASE_LOCAL_URL}/uploads/${req.file.filename}`, // Guarda la ruta de la imagen
+      imageUrl: `${BACKEND_URL}/uploads/${req.file.filename}`, // Guarda la ruta de la imagen
     });
 
     // Guarda el producto en la base de datos

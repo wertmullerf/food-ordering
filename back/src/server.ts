@@ -17,13 +17,16 @@ import authRouter from "./routes/auth.routes";
 import "../src/services/cron/limpiarPedidosPendientes";
 import { createClient } from "redis";
 import path from "path";
+import { CORS_ORIGINS } from "./config";
 const PORT = process.env.PORT;
 const app = express();
 connectDB();
 app.use(
   cors({
-    origin: "http://localhost:5173", // O el puerto que uses para tu frontend
+    origin: CORS_ORIGINS,
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Accept"],
   })
 );
 

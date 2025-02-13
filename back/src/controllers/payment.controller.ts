@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
-import { ACCESS_TOKEN, BASE_NGROK_URL } from "../config";
+import { ACCESS_TOKEN, BASE_NGROK_URL, FRONTEND_URL } from "../config";
 import { PayerRequest } from "mercadopago/dist/clients/payment/create/types";
 import { PreferenceResponse } from "mercadopago/dist/clients/preference/commonTypes";
 import { buscarCrearUsuario } from "../services/user.service";
@@ -47,7 +47,7 @@ export const crearOrden = async (req: Request, res: Response) => {
         body: {
           items,
           back_urls: {
-            success: `http://localhost:5173/pedido/${pago_id}`,
+            success: `${FRONTEND_URL}/pedido/${pago_id}`,
           },
           auto_return: "approved",
           expires: true, // Habilitar expiración

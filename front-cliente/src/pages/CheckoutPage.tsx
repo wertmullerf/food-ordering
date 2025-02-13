@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { CheckoutForm } from "../types/CheckoutForm";
 import { PersonalDataForm } from "../components/checkout/PersonalDataForm";
 import { AddressForm } from "../components/checkout/AddressForm";
+import CheckoutButton from "../components/checkout/CheckoutButton";
+import { API_ENDPOINTS } from "../config";
 
 const CheckoutPage: React.FC = () => {
   const { carrito, totalCarrito } = useCart();
@@ -50,14 +52,14 @@ const CheckoutPage: React.FC = () => {
         total: totalCarrito,
       };
 
-      const response = await fetch("http://localhost:3000/api/payment/create", {
+      const response = await fetch(`${API_ENDPOINTS.base}/payment/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify(payloadData),
         credentials: "include",
+        body: JSON.stringify(payloadData),
       });
 
       const responseData = await response.json();
@@ -105,26 +107,11 @@ const CheckoutPage: React.FC = () => {
                   <AddressForm register={register} errors={errors} />
 
                   <div className="col-12 mt-4">
-                    <button
-                      type="submit"
-                      className="btn btn-lg w-100"
-                      disabled={isLoading}
-                      style={{
-                        backgroundColor: "var(--accent-color)",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "50px",
-                      }}
-                    >
-                      {isLoading ? (
-                        <span
-                          className="spinner-border spinner-border-sm me-2"
-                          role="status"
-                          aria-hidden="true"
-                        ></span>
-                      ) : null}
-                      Proceder al Pago (${totalCarrito.toFixed(2)})
-                    </button>
+                    <CheckoutButton
+                      total={totalCarrito}
+                      isLoading={isLoading}
+                      onClick={() => handleSubmit(onSubmit)}
+                    />
                   </div>
                 </div>
               </form>

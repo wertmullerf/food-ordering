@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Ingrediente } from "../types/IProducto";
+import { API_ENDPOINTS } from "../config";
 
 interface IngredientesContextType {
   ingredientes: Ingrediente[];
@@ -32,7 +33,7 @@ export const IngredientesProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const fetchIngredientes = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/ingredient");
+        const res = await fetch(`${API_ENDPOINTS.base}/ingredient`);
         const data = await res.json();
         if (Array.isArray(data)) {
           setIngredientes(data);
@@ -44,9 +45,8 @@ export const IngredientesProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const fetchIngredientesExtras = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/ingredient/extras");
+        const res = await fetch(`${API_ENDPOINTS.base}/ingredient/extras`);
         const data = await res.json();
-        console.log(data);
         if (Array.isArray(data)) {
           setIngredientesExtras(data);
         }

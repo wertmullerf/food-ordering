@@ -5,6 +5,7 @@ import { useCart } from "../context/CartContext";
 import { CartItem } from "../types/IProducto";
 import { QuantitySelector } from "../components/product/QuantitySelector";
 import { useIngredientes } from "../context/IngredientesContext";
+import { replaceLocalhost } from "../config";
 
 const CartPage: React.FC = () => {
   const {
@@ -119,7 +120,7 @@ const CartPage: React.FC = () => {
                     <div className="col-md-4">
                       <div className="position-relative">
                         <img
-                          src={item.imageUrl}
+                          src={replaceLocalhost(item.imageUrl)}
                           alt={item.nombre}
                           className="rounded-4 w-100"
                           style={{

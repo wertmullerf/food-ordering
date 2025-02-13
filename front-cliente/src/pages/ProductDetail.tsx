@@ -8,6 +8,8 @@ import BurgerLoader from "../components/BurgerLoader";
 import { ProductImage } from "../components/product/ProductImage";
 import { ProductExtras } from "../components/product/ProductExtras";
 import { QuantitySelector } from "../components/product/QuantitySelector";
+import { replaceLocalhost } from "../config";
+import { CartIcon } from "../components/CartIcon";
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
@@ -96,7 +98,10 @@ const ProductDetail: React.FC = () => {
       <div className="container">
         <div className="row g-4">
           <div className="col-md-6">
-            <ProductImage imageUrl={product.imageUrl} nombre={product.nombre} />
+            <ProductImage
+              imageUrl={replaceLocalhost(product.imageUrl)}
+              nombre={product.nombre}
+            />
           </div>
 
           <div className="col-md-6">
@@ -118,14 +123,15 @@ const ProductDetail: React.FC = () => {
                 </h4>
               </div>
 
-              {ingredientesExtras.length > 0 && (
-                <ProductExtras
-                  extras={ingredientesExtras
-                    .filter((i) => i.precioExtra !== undefined)
-                    .map((i) => ({ ...i, precioExtra: i.precioExtra! }))}
-                  onExtraChange={handleExtrasChange}
-                />
-              )}
+              {product.categoria.toLowerCase() === "hamburguesas" &&
+                ingredientesExtras.length > 0 && (
+                  <ProductExtras
+                    extras={ingredientesExtras
+                      .filter((i) => i.precioExtra !== undefined)
+                      .map((i) => ({ ...i, precioExtra: i.precioExtra! }))}
+                    onExtraChange={handleExtrasChange}
+                  />
+                )}
 
               <div className="d-flex align-items-center gap-4 mb-4">
                 <QuantitySelector
@@ -156,6 +162,7 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* <CartIcon /> */}
     </div>
   );
 };

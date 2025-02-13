@@ -58,7 +58,7 @@ const Hero: React.FC = () => {
               <div className="hero-image-container mt-5">
                 <img
                   src={heroImage}
-                  alt="Deliciosa hamburguesa"
+                  alt="Hamburguesa"
                   className="w-100"
                   style={{
                     maxHeight: "500px",
