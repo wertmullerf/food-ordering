@@ -10,6 +10,7 @@ import { ProductExtras } from "../components/product/ProductExtras";
 import { QuantitySelector } from "../components/product/QuantitySelector";
 import { replaceLocalhost } from "../config";
 import { CartIcon } from "../components/CartIcon";
+import { ProductIngredientes } from "../components/product/ProductIngredientes";
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
@@ -123,6 +124,12 @@ const ProductDetail: React.FC = () => {
                 </h4>
               </div>
 
+              {/* {product.categoria.toLocaleLowerCase() === "hamburguesas" &&
+                product.ingredientes?.length > 0 && (
+                  <ProductIngredientes
+
+                  />
+                )} */}
               {product.categoria.toLowerCase() === "hamburguesas" &&
                 ingredientesExtras.length > 0 && (
                   <ProductExtras

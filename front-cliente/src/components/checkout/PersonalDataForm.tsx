@@ -1,14 +1,17 @@
-import React from 'react';
-import { UseFormRegister, FieldErrors, FieldError } from 'react-hook-form';
-import { CheckoutForm } from '../../types/CheckoutForm';
-import { InputField } from './InputField';
+import React from "react";
+import { UseFormRegister, FieldErrors, FieldError } from "react-hook-form";
+import { CheckoutForm } from "../../types/CheckoutForm";
+import { InputField } from "./InputField";
 
 interface PersonalDataFormProps {
   register: UseFormRegister<CheckoutForm>;
   errors: FieldErrors<CheckoutForm>;
 }
 
-export const PersonalDataForm: React.FC<PersonalDataFormProps> = ({ register, errors }) => {
+export const PersonalDataForm: React.FC<PersonalDataFormProps> = ({
+  register,
+  errors,
+}) => {
   return (
     <>
       <div className="col-12">
@@ -42,7 +45,7 @@ export const PersonalDataForm: React.FC<PersonalDataFormProps> = ({ register, er
           required="El email es requerido"
           pattern={{
             value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-            message: "Email inválido"
+            message: "Email inválido",
           }}
         />
       </div>
@@ -65,13 +68,18 @@ export const PersonalDataForm: React.FC<PersonalDataFormProps> = ({ register, er
         />
       </div>
       <div className="col-md-6">
-        <InputField
-          register={register}
-          name="identification.type"
-          placeholder="Tipo de documento (ej: DNI)"
-          error={errors.identification?.type as FieldError}
-          required="El tipo de documento es requerido"
-        />
+        <select
+          className="form-select"
+          style={{
+            backgroundColor: "var(--dark-surface-2)",
+            border: "none",
+            color: "var(--text-primary)",
+          }}
+        >
+          <option value="dni">DNI</option>
+          <option value="dnu">DNU</option>
+          <option value="otro">OTRO</option>
+        </select>
       </div>
       <div className="col-md-6">
         <InputField
@@ -84,4 +92,4 @@ export const PersonalDataForm: React.FC<PersonalDataFormProps> = ({ register, er
       </div>
     </>
   );
-}; 
+};
