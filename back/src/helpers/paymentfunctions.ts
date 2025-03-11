@@ -11,6 +11,7 @@ import { IUsuario } from "../interfaces/IUser";
 import { ACCESS_TOKEN } from "../config";
 import { obtenerIngredientesExtras } from "./dbfunctions";
 import { IIngrediente } from "../interfaces/IIngrediente";
+import { Preference } from "mercadopago";
 /*---------------NO TOCAR (TIENE HORAS ENCIMA) -------------------*/
 
 export const exitoso = async (id: String) => {
@@ -221,4 +222,31 @@ export const igualarPrecio = (items: any, productos: IPedidoProducto[]) => {
   for (let i = 0; i < items.length; i++) {
     productos[i].precio = items[i].unit_price;
   }
+};
+
+export const generarResponsePreferencia = async (
+  preference: Preference,
+  items: any,
+  pago_id: string,
+  FRONTEND_URL: string,
+  BASE_NGROK_URL: string
+) => {
+  return await preference.create({
+    body: {
+      items,
+      back_urls: {
+        success: `${FRONTEND_URL}/pedido/${pago_id}`,
+      },
+      auto_return: "approved",
+      expires: true, // Habilitar expiración
+      expiration_date_from: new Date().toISOString(), // Desde ahora
+      expiration_date_to: new Date(Date.now() + 20 * 60 * 1000).toISOString(), // 20 minutos después
+      notification_url: `${BASE_NGROK_URL}/api/payment/webhook`,
+      external_reference: pago_id,
+    },
+
+    requestOptions: {
+      timeout: 10000,
+    },
+  });
 };

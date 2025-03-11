@@ -11,6 +11,7 @@ import {
   crearListaItems,
   generarExternalReference,
   igualarPrecio,
+  generarResponsePreferencia,
 } from "../helpers/paymentfunctions";
 import { crearDireccion } from "../services/address.service";
 import { agruparProductosIdenticos } from "../utils/orderUtils";
@@ -43,26 +44,14 @@ export const crearOrden = async (req: Request, res: Response) => {
     try {
       const pago_id = generarExternalReference();
       // Crear la preferencia de pago
-      const response: PreferenceResponse = await preference.create({
-        body: {
-          items,
-          back_urls: {
-            success: `${FRONTEND_URL}/pedido/${pago_id}`,
-          },
-          auto_return: "approved",
-          expires: true, // Habilitar expiración
-          expiration_date_from: new Date().toISOString(), // Desde ahora
-          expiration_date_to: new Date(
-            Date.now() + 20 * 60 * 1000
-          ).toISOString(), // 20 minutos después
-          notification_url: `${BASE_NGROK_URL}/api/payment/webhook`,
-          external_reference: pago_id,
-        },
-
-        requestOptions: {
-          timeout: 10000,
-        },
-      });
+      const response: PreferenceResponse = await generarResponsePreferencia(
+        preference,
+        items,
+        pago_id,
+        FRONTEND_URL,
+        BASE_NGROK_URL
+      );
+      console.log("La response es" + response);
       console.log(`${BASE_NGROK_URL}/api/payment/webhook`);
       const paymentUrl = response?.init_point;
       //console.log(response);

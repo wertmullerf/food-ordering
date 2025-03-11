@@ -4,7 +4,7 @@ export const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 export const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000";
 export const JWT_SECRET = process.env.JWT_SECRET;
 export const BASE_NGROK_URL =
-  process.env.BASE_NGROK_URL || "https://17e2-152-169-122-128.ngrok-free.app";
+  process.env.BASE_NGROK_URL || "https://1337-190-19-17-29.ngrok-free.app";
 // Configuración de CORS
 export const CORS_ORIGINS = [FRONTEND_URL, "http://192.168.0.61:5173"];
 

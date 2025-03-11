@@ -3,7 +3,6 @@ import Producto from "../models/Producto"; // Asegúrate de que la ruta es corre
 import { IProducto } from "../interfaces/IProducto";
 import { obtenerRecursoPorId } from "../helpers/dbfunctions";
 import { obtenerInfoRedis, saveResult } from "../helpers/redisfunction";
-import upload from "../config/multerConfig"; // Importa la configuración de Multer
 import { BACKEND_URL } from "../config";
 import { verificarCamposProduct } from "../helpers/validatefunctions";
 import { Categorias } from "../enums/Categorias";

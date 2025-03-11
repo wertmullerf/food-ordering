@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { obtenerInfoRedis, saveResult } from "../helpers/redisfunction";
 import Ingrediente from "../models/Ingrediente";
 
 export const agregarIngrediente = async (req: Request, res: Response) => {

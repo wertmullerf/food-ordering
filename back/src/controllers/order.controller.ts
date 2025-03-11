@@ -1,7 +1,6 @@
 import Pedido from "../models/Pedido";
 import { Request, Response } from "express";
 import { obtenerInfoRedis, saveResult } from "../helpers/redisfunction";
-import Ingrediente from "../models/Ingrediente";
 
 export const obtenerOrdenes = async (req: Request, res: Response) => {
   try {
